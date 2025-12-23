@@ -27,7 +27,7 @@ public interface IMinioRepository
     /// <param name="objectName">Имя объекта.</param>
     /// <param name="cancellationToken">Токен отмены.</param>
     /// <returns>Поток с содержимым файла.</returns>
-    Task <Stream> DownloadFileAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
+    Task<Stream> DownloadFileAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Сгенерировать Url для файла.

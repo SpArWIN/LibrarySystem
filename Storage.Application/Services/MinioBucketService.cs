@@ -119,7 +119,7 @@ public sealed class MinioBucketService : IMinioBucketService
                 }
 
                 await using var fileStream = File.OpenRead(filePath);
-                var contentType = BucketTypeExtensions.GetContentType(fileName);
+                var contentType = await _imageStorageService.GetContentTypeAsync(bucketName, fileName, cancellationToken) ?? BucketTypeExtensions.GetContentType(fileName);
                 await _imageStorageService.UploadImageAsync(
                     bucketName,
                     fileName,

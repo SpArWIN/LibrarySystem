@@ -18,6 +18,7 @@ public static class BucketTypeExtensions
             ".gif" => "image/gif",
             ".bmp" => "image/bmp",
             ".webp" => "image/webp",
+            ".txt" => "text/plain",
             _ => "application/octet-stream"
         };
     }

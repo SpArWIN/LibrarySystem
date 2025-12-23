@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System.Collections.Concurrent;
+using System.Reactive.Linq;
 using Common.Contracts.Storage.Files;
 using Common.Contracts.Storage.Settings;
 using Microsoft.Extensions.Options;
@@ -16,6 +17,8 @@ public sealed class MinioRepository : IMinioRepository
 {
     private static readonly ILogger Logger = Log.ForContext<MinioRepository>();
 
+    private readonly ConcurrentDictionary<string, SemaphoreSlim> _buckets = new();
+    
     private readonly IMinioClient _client;
     private readonly MinioOptions _options;
 
@@ -212,20 +215,43 @@ public sealed class MinioRepository : IMinioRepository
     /// <inheritdoc />
     public async Task<bool> ExistsAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
     {
-       var status = await _client.StatObjectAsync(new StatObjectArgs()
-           .WithBucket(bucketName)
-           .WithObject(objectName), cancellationToken);
-       return status is not null;
+        try
+        {
+            var status = await _client.StatObjectAsync(new StatObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(objectName), cancellationToken);
+            return status is not null;
+        }
+        catch (ObjectNotFoundException)
+        {
+            return false;
+        }
     }
 
     /// <inheritdoc />
     public async Task<bool> DeleteBucketIfEmptyAsync(string bucketName, CancellationToken cancellationToken = default)
+    {
+        var semaphore = _buckets.GetOrAdd(bucketName, _ => new SemaphoreSlim(1, 1));
+        await semaphore.WaitAsync(cancellationToken);
+        try
+        {
+            return await DeleteBucketIfEmptyInternalAsync(bucketName, cancellationToken);
+        }
+        finally
+        {
+            semaphore.Release();
+            _buckets.TryRemove(bucketName, out _);
+        }
+    }
+    
+    private async Task<bool> DeleteBucketIfEmptyInternalAsync(string bucketName, CancellationToken cancellationToken = default)
     {
         var isEmpty = true;
 
         var listArgs = new ListObjectsArgs()
             .WithBucket(bucketName)
             .WithRecursive(true);
+        
         var observable = _client.ListObjectsAsync(listArgs);
         var tcs = new TaskCompletionSource<bool>();
         var subscriber = observable.Subscribe(

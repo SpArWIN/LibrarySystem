@@ -1,8 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Reactive.Linq;
 using Common.Contracts.Storage.Files;
-using Common.Contracts.Storage.Settings;
-using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel;
 using Minio.DataModel.Args;
@@ -20,21 +18,17 @@ public sealed class MinioRepository : IMinioRepository
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _buckets = new();
     
     private readonly IMinioClient _client;
-    private readonly MinioOptions _options;
-
-    public MinioRepository(IOptions<MinioOptions> options)
+    private readonly IPublicUrlRewriter _publicUrlRewriter;
+    
+    /// <summary>
+    /// Конструктор.
+    /// </summary>
+    /// <param name="client"><see cref="IMinioClient"/>.</param>
+    /// <param name="publicUrlRewriter"><see cref="IPublicUrlRewriter"/>.</param>
+    public MinioRepository(IMinioClient client, IPublicUrlRewriter publicUrlRewriter)
     {
-        _options = options.Value;
-
-        var builder = new MinioClient()
-            .WithEndpoint(_options.Endpoint, _options.Port)
-            .WithCredentials(_options.AccessKey, _options.SecretKey);
-        if (_options.WithSsl)
-        {
-            builder.WithSSL();
-        }
-
-        _client = builder.Build();
+        _client = client;
+        _publicUrlRewriter = publicUrlRewriter;
     }
 
     /// <inheritdoc />
@@ -73,17 +67,8 @@ public sealed class MinioRepository : IMinioRepository
             .WithBucket(bucketName)
             .WithObject(objectName)
             .WithExpiry(60 * 60);
-        if (_options is { PublicEndpoint: not null } options)
-        {
-            var publicClient = new MinioClient()
-                .WithEndpoint(options.PublicEndpoint!, options.PublicPort)
-                .WithCredentials(options.AccessKey, options.SecretKey)
-                .WithSSL(options.WithSsl)
-                .Build();
-            return await publicClient.PresignedGetObjectAsync(args);
-        }
         var url = await _client.PresignedGetObjectAsync(args);
-        return RewritePublicUrl(url);
+        return _publicUrlRewriter.Rewrite(url);
     }
 
     /// <inheritdoc />
@@ -272,22 +257,4 @@ public sealed class MinioRepository : IMinioRepository
         }
         return isEmpty;
     }
-
-    private string RewritePublicUrl(string pressingUrl)
-    {
-        if (string.IsNullOrEmpty(_options.PublicEndpoint))
-        {
-            return pressingUrl;
-        }
-        var uri = new Uri(pressingUrl);
-        var scheme = _options.WithSsl ? "https" : "http";
-        var builder = new UriBuilder(uri)
-        {
-            Scheme = scheme,
-            Host   = _options.PublicEndpoint,
-            Port   = _options.PublicPort != 0 ? _options.PublicPort : -1
-        };
-        return builder.Uri.ToString();
-    }
-
 }

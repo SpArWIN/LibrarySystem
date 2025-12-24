@@ -43,6 +43,7 @@ public static class MinioServiceCollectionExtensions
         
         services.AddSingleton<IConfiguration>(configuration);
         services.Configure<MinioOptions>(configuration.GetSection(Section.Minio));
+        services.AddScoped<IPublicUrlRewriter, PublicUrlRewriter>();
         services.AddScoped<IMinioRepository, MinioRepository>();
         services.AddSingleton<IMinioClient>(sp =>
         {

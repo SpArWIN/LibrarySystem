@@ -1,6 +1,8 @@
 ﻿using Common.Contracts.Storage.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Minio;
 using Storage.Application.Constaints.Section;
 using Storage.Application.Services;
 using Storage.Domain.Repository;
@@ -23,6 +25,7 @@ public static class ServiceExtensions
     {
         serviceCollection.AddTransient<IImageStorageService, ImageStorageService>();
         serviceCollection.AddTransient<IBucketHelperService, BucketHelperService>();
+        serviceCollection.AddTransient<IMinioBucketService, MinioBucketService>();
         serviceCollection.AddMinio(configuration);
         return serviceCollection;
     }
@@ -35,7 +38,22 @@ public static class ServiceExtensions
         {
             throw new ApplicationException("Minio configuration section is missing.");
         }
-        serviceCollection.AddTransient<IMinioRepository, MinioRepository>();
+
+        serviceCollection.AddSingleton<IMinioClient>(sp =>
+        {
+            var builder = new MinioClient()
+                .WithEndpoint(minioOptions.Endpoint, minioOptions.Port)
+                .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey);
+
+            if (minioOptions.WithSsl)
+            {
+                builder.WithSSL();
+            }
+
+            return builder.Build();
+        });
+        serviceCollection.AddScoped<IMinioRepository, MinioRepository>();
+        serviceCollection.AddScoped<IPublicUrlRewriter, PublicUrlRewriter>();
         return serviceCollection;
     }
 }

@@ -1,4 +1,8 @@
-﻿using Common.Migrator.Services;
+﻿using Common.Contracts.Constaints.Sections;
+using Common.Contracts.Settings;
+using Common.Db.Factory;
+using Common.Migrator.Services;
+using Core.Infrastructure.Context;
 using Core.Infrastructure.Extensions.DataBase;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +29,9 @@ static class Program
             })
             .ConfigureServices((ctx, services) =>
             {
-                services.AddLibraryDbContext(ctx.Configuration);
+                services.AddCentralDbContext(ctx.Configuration);
+                services.Configure<TenantDatabaseOptions>(ctx.Configuration.GetSection(Section.TenantDatabase));
+                services.AddSingleton<IAppDbContextFactory<LibraryDbContext>, LibraryDbContextFactory>();
                 services.AddHostedService<MigrationHostedService>();
             })
             .Build();

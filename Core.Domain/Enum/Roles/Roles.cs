@@ -1,18 +1,22 @@
-﻿namespace Core.Domain.Enum.Roles
+﻿namespace Core.Domain.Enum.Roles;
+
+/// <summary>
+/// Перечисление пользовательских ролей.
+/// </summary>
+public enum Roles
 {
     /// <summary>
-    /// Перечисление пользовательских ролей.
+    /// Читатель.
     /// </summary>
-    public enum Roles
-    {
-        /// <summary>
-        /// Читатель.
-        /// </summary>
-        Reader = 1,
+    Reader = 1,
     
-        /// <summary>
-        /// Библиотекарь.
-        /// </summary>
-        Librarian = 2,
-    }
+    /// <summary>
+    /// Библиотекарь.
+    /// </summary>
+    Librarian = 2,
+    
+    /// <summary>
+    /// Администратор.
+    /// </summary>
+    Administrator = 3
 }

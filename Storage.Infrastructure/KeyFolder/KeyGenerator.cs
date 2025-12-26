@@ -9,18 +9,30 @@ public static class KeyGenerator
     /// Сгенерировать ключ.
     /// </summary>
     /// <param name="bucketName">Имя бакета.</param>
-    /// <param name="imageName">Имя изоббражения.</param>
+    /// <param name="objectKey">Ключ объекта в бакете.</param>
     /// <returns>Сгенерированный ключ.</returns>
-    public static string GenerateKey(string bucketName, string imageName) => $"{bucketName}:{imageName}";
+    public static string GenerateKey(string bucketName, string objectKey) => $"{bucketName}:{objectKey}";
+    
+    /// <summary>
+    /// Клююч для глобальных изображений. По типу фона, общих картинок.
+    /// </summary>
+    /// <param name="folder">Логическая папка (например: "ui", "backgrounds").</param>
+    /// <param name="fileName">Имя файла.</param>
+    /// <returns>Ключ.</returns>
+    public static string Global(string folder, string fileName) =>$"global/{folder}/{fileName}";
     
     /// <summary>
     /// Преобразовать ключ.
     /// </summary>
     /// <param name="key">Ключ объекта.</param>
     /// <returns>Преобразованный ключ.</returns>
-    public static (string BucketName, string ImageName) ParseKey(string key)
+    public static (string BucketName, string ObjectKey) ParseKey(string key)
     {
-        var parts = key.Split(':');
-        return (parts[0], parts[1]);
+       var idx = key.IndexOf(':');
+       if (idx < 0 || idx == key.Length - 1)
+       {
+           throw new FormatException("Invalid key format");
+       }
+       return (key[..idx], key[(idx + 1)..]);
     }
 }

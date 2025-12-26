@@ -1,4 +1,6 @@
-﻿using Core.Domain.Models;
+﻿using Core.Domain.Enum.Roles;
+using Core.Domain.Models;
+using Core.Infrastructure.Constaints;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Infrastructure.Context;
@@ -10,8 +12,6 @@ namespace Core.Infrastructure.Context;
 public sealed class LibraryDbContext (DbContextOptions<LibraryDbContext> options)
 : DbContext(options)
 {
-    /// <summary>Пользователи.</summary>
-    public DbSet<User> Users { get; init; }
     
     /// <summary>Авторы.</summary>
     public DbSet<Author> Authors { get; init; }

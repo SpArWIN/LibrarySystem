@@ -111,23 +111,27 @@ public sealed class MinioBucketService : IMinioBucketService
             try
             {
                 var fileName = Path.GetFileName(filePath);
-                var exists = await ExistsAsync(bucketName, fileName, cancellationToken);
-                if (!exists)
+                var objectKey = KeyGenerator.Global(MinioBuckets.MetaDataImages, fileName);
+                var exists = await ExistsAsync(bucketName, objectKey, cancellationToken);
+                if (exists)
                 {
-                    Logger.Information(" -> File Exists... {fileName} in bucket {bucketName}", fileName, bucketName);
+                    Logger.Information(" -> File Exists... {fileName} in bucket {bucketName}", objectKey, bucketName);
                     continue;
                 }
 
                 await using var fileStream = File.OpenRead(filePath);
-                var contentType = await _imageStorageService.GetContentTypeAsync(bucketName, fileName, cancellationToken) ?? BucketTypeExtensions.GetContentType(fileName);
+                var contentType = await _imageStorageService.GetContentTypeAsync(bucketName, objectKey, cancellationToken)
+                                  ?? 
+                                  BucketTypeExtensions.GetContentType(objectKey);
                 await _imageStorageService.UploadImageAsync(
                     bucketName,
-                    fileName,
+                    objectKey,
                     fileStream,
                     contentType,
                     cancellationToken
                 );
-                var messageKey = KeyGenerator.GenerateKey(bucketName, fileName);
+                var messageKey = KeyGenerator.GenerateKey(bucketName, objectKey);
+                
                 //TODO тут отправить в Nats.
             }
             catch (IOException e)

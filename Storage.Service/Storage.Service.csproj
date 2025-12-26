@@ -13,5 +13,9 @@
     <ItemGroup>
       <ProjectReference Include="..\Storage.Application\Storage.Application.csproj" />
     </ItemGroup>
-
+    <ItemGroup>
+        <Content Include="PreloadImage\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 ﻿using Common.Db.Abstractions;
 using Common.Db.Factory;
 using Common.Policies.PipelineNames;
+using Microsoft.EntityFrameworkCore;
 using Polly;
 
 namespace Common.Db.Extensions;
@@ -13,17 +14,20 @@ public static class UnitOfWorkResilienceExtensions
     /// <summary>
     /// Начать транзакцию, создавая попытки.
     /// </summary>
-    /// <param name="factory"><see cref="IUnitOfWorkFactory"/>.</param>
+    /// <param name="factory"><see cref="IUnitOfWorkFactory{TDbContext}"/>.</param>
     /// <param name="action">Выполняемое действие.</param>
     /// <param name="pipeline"><see cref="ResiliencePipeline"/> Политики повтора попыток.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <typeparam name="TResult">Тип результата.</typeparam>
+    /// <typeparam name="TDbContext">Контекст базы данных.</typeparam>
     /// <returns>Результат выполнения действия.</returns>
-    public static ValueTask<TResult> CreateWithRetryAsync<TResult>(
-        this IUnitOfWorkFactory factory,
+    public static ValueTask<TResult> CreateWithRetryAsync<TDbContext,TResult>
+    (this IUnitOfWorkFactory<TDbContext> factory,
         Func<IUnitOfWork, Task<TResult>> action,
         ResiliencePipeline pipeline,
-        CancellationToken cancellationToken = default) => pipeline.ExecuteAsync(async token =>
+        CancellationToken cancellationToken = default)
+        where TDbContext : DbContext
+        => pipeline.ExecuteAsync(async token =>
      {
          await using var uow = await factory.CreateAsync(beginTransaction: true, token);
          try
@@ -43,21 +47,23 @@ public static class UnitOfWorkResilienceExtensions
              throw;
          }
      }, cancellationToken);
-    
+
     /// <summary>
     /// Выполнить действие для чтения, вне транзакций.
     /// </summary>
-    /// <param name="factory"><see cref="IUnitOfWorkFactory"/>.</param>
+    /// <param name="factory"><see cref="IUnitOfWorkFactory{TDbContext}"/>.</param>
     /// <param name="action">Выполняемое действие.</param>
     /// <param name="pipeline"><see cref="ResiliencePipeline"/> Политики повтора попыток.</param>
     /// <param name="ct"><see cref="CancellationToken"/>.</param>
     /// <typeparam name="TResult">Тип результата.</typeparam>
+    /// <typeparam name="TDbContext">Контекст базы данных.</typeparam>
     /// <returns></returns>
-    public static ValueTask<TResult> ExecuteQueryAsync<TResult>(
-        this IUnitOfWorkFactory factory,
+    public static ValueTask<TResult> ExecuteQueryAsync<TDbContext,TResult>(
+        this IUnitOfWorkFactory<TDbContext> factory,
         Func<IUnitOfWork, Task<TResult>> action,
         ResiliencePipeline pipeline,
         CancellationToken ct = default)
+    where TDbContext : DbContext
     {
         return pipeline.ExecuteAsync(async token =>
         {

@@ -15,22 +15,17 @@ public static class FactoriesExtension
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/>.</param>
     /// <param name="assemblies">Сборки для формирования получения репозиториев.</param>
-    /// <param name="dbOptions"><see cref="DbContextOptionsBuilder"/>.</param>
     /// <typeparam name="TDbContext">Тип контекста.</typeparam>
     /// <returns><see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddCommonDb<TDbContext>(this IServiceCollection services,
-        Assembly[] assemblies,
-        Action<DbContextOptionsBuilder>? dbOptions)
+        Assembly[] assemblies)
         where TDbContext : DbContext
     {
-        services.AddDbContext<TDbContext>(dbOptions);
         services.AddRepositoryFactory<TDbContext>(assemblies);
-        services.AddSingleton<IUnitOfWorkFactory>(sp => new UnitOfWorkFactory<TDbContext>(sp.GetRequiredService<IServiceScopeFactory>()));
-        services.AddUnitOfWork<TDbContext>();
         return services;
     }
     
-    //services.AddRepositoryFactory<LibraryDbContext>();
+    
     /// <summary>
     /// Добавить фабрику репозиториев.
     /// </summary>
@@ -45,7 +40,4 @@ public static class FactoriesExtension
     {
       return  services.AddScoped<IRepositoryFactory<TDbContext>>(_ => new RepositoryFactory<TDbContext>(scanAssemblies));
     }
-
-    
-    
 }

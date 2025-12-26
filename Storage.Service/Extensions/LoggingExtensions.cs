@@ -64,7 +64,7 @@ public static class LoggingExtensions
                 shared: true);
         }
         
-   }
+    }
     
     public static ILoggingBuilder AddCustomLogging(this ILoggingBuilder loggingBuilder)
     {

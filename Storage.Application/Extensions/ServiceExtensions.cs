@@ -52,8 +52,8 @@ public static class ServiceExtensions
 
             return builder.Build();
         });
-        serviceCollection.AddScoped<IMinioRepository, MinioRepository>();
-        serviceCollection.AddScoped<IPublicUrlRewriter, PublicUrlRewriter>();
+        serviceCollection.AddTransient<IMinioRepository, MinioRepository>();
+        serviceCollection.AddTransient<IPublicUrlRewriter, PublicUrlRewriter>();
         return serviceCollection;
     }
 }

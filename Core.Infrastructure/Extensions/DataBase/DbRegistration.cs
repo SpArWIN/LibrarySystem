@@ -1,7 +1,6 @@
-﻿using Core.Infrastructure.Constaints.Providers;
-using Core.Infrastructure.Constaints.Sections;
-using Core.Infrastructure.Context;
-using Core.Infrastructure.Settings;
+﻿using Common.Contracts.Constaints.Providers;
+using Common.Contracts.Constaints.Sections;
+using Common.Contracts.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,20 +13,19 @@ namespace Core.Infrastructure.Extensions.DataBase;
 public static class DbRegistration
 {
     /// <summary>
-    /// Добавить контекст базы данных.
+    /// Добавить централизированный контекст базы данных.
     /// </summary>
     /// <param name="serviceCollection"><see cref="IServiceCollection"/>.</param>
     /// <param name="configuration"><see cref="IConfiguration"/>.</param>
     /// <returns><see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddLibraryDbContext(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddCentralDbContext(this IServiceCollection serviceCollection,
         IConfiguration configuration)
-    {
-        var db = BindDataBaseSettings(configuration);
-
-        serviceCollection.AddDbContext<LibraryDbContext>(options => ConfigureDbContext(options, db));
-
+    { 
+        serviceCollection.AddDbContext<CentralDbContext>(options =>
+            ConfigureDbContext(options, BindDataBaseSettings(configuration)));
         return serviceCollection;
     }
+    
 
     private static DataBaseSettings BindDataBaseSettings(IConfiguration configuration)
     {

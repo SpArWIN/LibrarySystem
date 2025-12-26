@@ -1,4 +1,4 @@
-﻿namespace Core.Infrastructure.Constaints.Providers;
+﻿namespace Common.Contracts.Constaints.Providers;
 
 /// <summary>
 /// Константы на поставщиков.

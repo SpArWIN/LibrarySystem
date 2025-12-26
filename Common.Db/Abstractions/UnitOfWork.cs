@@ -1,7 +1,6 @@
 ﻿using Common.Db.Factory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Common.Db.Abstractions;
 
@@ -11,17 +10,20 @@ where TDbContext : DbContext
 {
     private readonly IRepositoryFactory<TDbContext> _repoFactory;
     private IDbContextTransaction? _transaction;
-    
+
     /// <summary>
     /// Конструктор.
     /// </summary>
     /// <param name="repoFactory">Фабрика репозиториев.</param>
-    /// <param name="scope"><see cref="IServiceScope"/>.</param>
-    public UnitOfWork(IRepositoryFactory<TDbContext> repoFactory, IServiceScope scope)
+    /// <param name="context">Необходимый контекст базы данных.</param>
+    public UnitOfWork(
+        IRepositoryFactory<TDbContext> repoFactory,
+        TDbContext context)
     {
         _repoFactory = repoFactory;
-        Context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        Context = context  ?? throw new ArgumentNullException(nameof(context));;
     }
+    
     
     /// <inheritdoc />
     public async Task CommitAsync(CancellationToken cancellationToken = default)

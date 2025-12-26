@@ -1,4 +1,4 @@
-﻿namespace Core.Infrastructure.Settings;
+﻿namespace Common.Contracts.Settings;
 
 /// <summary>
 /// Настройки подключения к базе данных.

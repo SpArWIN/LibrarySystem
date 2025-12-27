@@ -5,7 +5,7 @@
 /// </summary>
 public static class NamesPipeline
 {
-    public static class DbPipelanes
+    public static class DbPipelines
     {
         /// <summary>Пайплайн для write-операций БД (транзакции).</summary>
         public const string Write = nameof(Write);

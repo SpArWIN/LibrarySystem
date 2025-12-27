@@ -22,8 +22,8 @@ static class Program
                 .WriteTo.Console())
             .ConfigureAppConfiguration((_, cfg) =>
             {
-                var env = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production";
-                cfg.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+                cfg.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
                     .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: false)
                     .AddEnvironmentVariables(prefix: "LIBRARY__");
             })

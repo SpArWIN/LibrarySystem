@@ -15,7 +15,7 @@ public sealed record TenantProvisioningOptions
     public required string AdminConnectionString { get; init; }
 
     /// <summary>
-    /// Шаблон строки подключения к tenant-базе. Используй маркер {db}.
+    /// Шаблон строки подключения к tenant-базе.
     /// Пример: Host=...;Port=5432;Database={db};Username=...;Password=...
     /// </summary>
     public required string TenantConnectionStringTemplate { get; init; }

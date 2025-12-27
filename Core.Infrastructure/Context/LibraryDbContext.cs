@@ -39,7 +39,9 @@ public sealed class LibraryDbContext (DbContextOptions<LibraryDbContext> options
     /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(LibraryDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(LibraryDbContext).Assembly,
+            type =>type.Namespace!.StartsWith("Core.Infrastructure.Context.Config", StringComparison.Ordinal)
+            );
         base.OnModelCreating(modelBuilder);
     }
 }

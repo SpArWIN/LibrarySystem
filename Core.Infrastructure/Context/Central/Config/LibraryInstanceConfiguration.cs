@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Core.Infrastructure.Context.Config;
+namespace Core.Infrastructure.Context.Central.Config;
 
 /// <summary>
 /// Конфигурация баз данных.

@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Net.Sockets;
 using Common.Policies.Models;
 using Common.Policies.PipelineNames;
 using Common.Policies.Pollicies.Extension;
@@ -20,7 +21,7 @@ public static class ResilienceRegistrationExtensions
     /// <returns><see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddDefaultPolicies(this IServiceCollection services)
     {
-        services.AddResiliencePipeline(NamesPipeline.DbPipelanes.Write, builder =>
+        services.AddResiliencePipeline(NamesPipeline.DbPipelines.Write, builder =>
         {
             builder.AddJitterPolicy(
                 new RetryOptions()
@@ -34,7 +35,7 @@ public static class ResilienceRegistrationExtensions
             );
         });
 
-        services.AddResiliencePipeline(NamesPipeline.DbPipelanes.Read, builder =>
+        services.AddResiliencePipeline(NamesPipeline.DbPipelines.Read, builder =>
         {
             builder.AddJitterPolicy(
                 new RetryOptions()
@@ -83,6 +84,7 @@ public static class ResilienceRegistrationExtensions
     private static bool IsEfTransient(Exception exception) =>
         exception is TimeoutException
         || exception is IOException
+        || exception is SocketException
         || exception.InnerException is DbException;
     
     private static bool IsHttpTransient(Exception exception) =>

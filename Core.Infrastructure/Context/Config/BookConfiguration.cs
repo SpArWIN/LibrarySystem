@@ -44,5 +44,6 @@ public sealed class BookConfiguration : IEntityTypeConfiguration<Book>
             .WithOne(x => x.Book)
             .HasForeignKey(x => x.BookId)
             .OnDelete(DeleteBehavior.Cascade);
+        
     }
 }

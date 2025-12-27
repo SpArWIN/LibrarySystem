@@ -25,7 +25,10 @@ public sealed class CentralDbContext(DbContextOptions<CentralDbContext> options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CentralDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CentralDbContext).Assembly,
+            type =>type.FullName!.StartsWith("Core.Infrastructure.Context.Central.Config", StringComparison.Ordinal)
+        );
+        
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = RoleIds.Reader, Name = nameof(Domain.Enum.Roles.Roles.Reader), Description = "Читатель" },
             new Role { Id = RoleIds.Librarian, Name = nameof(Domain.Enum.Roles.Roles.Librarian), Description = "Библиотекарь" },

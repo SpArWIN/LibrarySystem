@@ -70,11 +70,14 @@ public sealed class AuthorizeService : IAuthorizeService
     /// <inheritdoc />
     public async Task<RefreshResponseDto> RefreshAsync(RefreshRequestDto request, IUnitOfWork uow, CancellationToken ct = default)
     {
+        Logger.Debug("-> Initial refresh request");
         var repository = uow.GetAuthorizationRepository();
         var nowUtc = DateTimeOffset.UtcNow;
         var oldHash = RefreshTokenCrypto.ComputeHash(request.RefreshToken, _refreshTokenOptions.Value.Pepper);
         var oldSession = await repository.FindRefreshSessionByHashAsync(oldHash, ct)
                          ?? throw new InvalidOperationException("Refresh token is invalid.");
+        
+        Logger.Debug("Find Old Session : {session}", oldSession);
 
         if (!oldSession.IsActive(nowUtc))
         {
@@ -82,6 +85,8 @@ public sealed class AuthorizeService : IAuthorizeService
         }
         var user = await repository.FindUserByIdAsync(oldSession.UserId, ct)
             ?? throw new InvalidOperationException("User not Found.");
+        
+        Logger.Debug("Find User {us}",user);
     
         var (accessToken, _, accessExpUtc) = CreateUserAccessToken(user, request.LibraryId);
       

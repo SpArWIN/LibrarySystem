@@ -12,7 +12,6 @@ namespace Core.Infrastructure.Context;
 public sealed class LibraryDbContext (DbContextOptions<LibraryDbContext> options)
 : DbContext(options)
 {
-    
     /// <summary>Авторы.</summary>
     public DbSet<Author> Authors { get; init; }
     
@@ -39,7 +38,9 @@ public sealed class LibraryDbContext (DbContextOptions<LibraryDbContext> options
     /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(LibraryDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(LibraryDbContext).Assembly,
+            type =>type.Namespace!.StartsWith("Core.Infrastructure.Context.Config", StringComparison.Ordinal)
+            );
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -48,11 +48,6 @@ public class Loan
     public BookStatus BookStatus { get; init; }
     
     /// <summary>
-    /// Пользователь, взявший книгу.
-    /// </summary>
-    public User? User { get; init; }
-    
-    /// <summary>
     /// Книга, которая была взята пользователем.
     /// </summary>
     public Book? Book { get; init; } 

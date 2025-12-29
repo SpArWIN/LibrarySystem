@@ -1,6 +1,9 @@
+using System.Reflection;
+using Common.Contracts.Settings;
 using Common.Db.Extensions;
 using Common.Http.Extensions;
 using Common.Http.Middleware;
+using Common.Policies.Di;
 using Core.Application.Extensions;
 using Core.Infrastructure;
 using Core.Infrastructure.Context;
@@ -18,9 +21,10 @@ builder.Logging.AddCustomLogging();
 builder.ConfigureSerilog();
 var services = builder.Services;
 var configuration = builder.Configuration;
+
+
 services.AddControllers();
 services.AddCentralDbContext(configuration);
-
 services.AddCommonDb<CentralDbContext>([typeof(AuthorizationRepository).Assembly]);
     // Регистрируем LibraryDbContext, для того, чтобы фабрика репозиториев знала где искать реализации репозиториев
 services.AddCommonDb<LibraryDbContext>([typeof(BookRepository).Assembly]);
@@ -32,26 +36,24 @@ services.AddJwtAuthentication(configuration);
 services.AddPermissionPolicies();
 services.AddHttpAccessor();
 services.AddEndpointsApiExplorer();
-
+services.AddSwaggerWithXml(Assembly.GetExecutingAssembly(), typeof(JwtOptions).Assembly);
+services.AddPoliciesService();
+services.AddDefaultPolicies();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    
-    app.MapOpenApi();
+    app.UseSwaggerWithUi();
 }
 
 app.UseRouting();
 app.UseAuthentication();
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<TenantResolutionMiddleware>();
-
 app.UseAuthorization();
 
 app.UseHttpsRedirection();
 app.MapControllers();
-
-
 
 await app.RunAsync();

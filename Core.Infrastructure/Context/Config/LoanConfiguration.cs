@@ -23,9 +23,9 @@ public class LoanConfiguration : IEntityTypeConfiguration<Loan>
             .HasConversion<int>()
             .IsRequired();
         
-        builder.HasOne(x => x.User)
-            .WithMany()                     
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.Book)
+            .WithMany()
+            .HasForeignKey(x => x.BookId);
+
     }
 }

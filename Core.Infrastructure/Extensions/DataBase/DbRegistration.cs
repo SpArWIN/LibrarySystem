@@ -22,32 +22,42 @@ public static class DbRegistration
         IConfiguration configuration)
     { 
         serviceCollection.AddDbContext<CentralDbContext>(options =>
-            ConfigureDbContext(options, BindDataBaseSettings(configuration)));
+            ConfigureDbContext(options, configuration.BindDataBaseSettings()));
         return serviceCollection;
     }
     
 
-    private static DataBaseSettings BindDataBaseSettings(IConfiguration configuration)
+    private static DataBaseSettings BindDataBaseSettings(this IConfiguration configuration)
     {
         var configurations = new ConfigurationBuilder()
             .AddConfiguration(configuration)
             .AddEnvironmentVariables("LIBRARY__")
             .Build();
 
-        var section = configurations.GetSection(Section.Database);
-        var settings = section.Get<DataBaseSettings>();
-        if (settings is null || string.IsNullOrWhiteSpace(settings.Provider)
-                             || string.IsNullOrWhiteSpace(settings.ConnectionString))
-            throw new ApplicationException("Database settings are missing or invalid.");
-        
+        var settings = configurations.GetSettings();
        
         return settings;
     }
 
-    private static void ConfigureDbContext(DbContextOptionsBuilder options, DataBaseSettings dbSettings)
+    /// <summary>
+    /// Получить настройки.
+    /// </summary>
+    /// <param name="configuration"><see cref="IConfiguration"/>.</param>
+    /// <returns>.</returns>
+    public static DataBaseSettings GetSettings(this IConfiguration configuration)
+    {
+        var section = configuration.GetSection(Section.Database);
+        var settings = section.Get<DataBaseSettings>();
+        if (settings is null || string.IsNullOrWhiteSpace(settings.Provider)
+                             || string.IsNullOrWhiteSpace(settings.ConnectionString))
+            throw new ApplicationException("Database settings are missing or invalid.");
+        return settings;
+    }
+
+    public static void ConfigureDbContext(DbContextOptionsBuilder options, DataBaseSettings dbSettings)
     {
         var migrations = string.IsNullOrWhiteSpace(dbSettings.MigrationsAssembly)
-            ? typeof(DataBaseSettings).Assembly.GetName().Name
+            ? typeof(CentralDbContext).Assembly.GetName().Name
             : dbSettings.MigrationsAssembly;
 
         switch (dbSettings.Provider.ToLowerInvariant())

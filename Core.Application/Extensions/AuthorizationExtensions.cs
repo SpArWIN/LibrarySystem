@@ -1,6 +1,8 @@
 ﻿using Common.Contracts.Claims;
 using Common.Contracts.Permission;
 using Common.Contracts.Policy;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.Application.Extensions;
@@ -25,6 +27,10 @@ public static class AuthorizationExtensions
             {
                 options.AddPolicy(policy, p => p.RequireClaim(ClaimNames.Scope, permission));
             }
+
+            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
         });
         return services;
     }

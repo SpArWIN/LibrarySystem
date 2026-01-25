@@ -23,7 +23,7 @@ public sealed class BookGenre
     /// <summary>
     /// Навигационное свойство Книги.
     /// </summary>
-    public  Book? Book { get; init; } 
+    public Book? Book { get; init; } 
     
     /// <summary>
     /// Навигационное свойство жанра.

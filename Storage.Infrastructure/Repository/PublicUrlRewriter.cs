@@ -1,4 +1,5 @@
 ﻿using Common.Contracts.Storage.Settings;
+using Common.Extensions;
 using Microsoft.Extensions.Options;
 using Storage.Domain.Repository;
 
@@ -21,7 +22,7 @@ public sealed class PublicUrlRewriter : IPublicUrlRewriter
     /// <inheritdoc />
     public string Rewrite(string url)
     {
-        if (string.IsNullOrWhiteSpace(_options.Value.PublicEndpoint))
+        if (_options.Value.PublicEndpoint.IsNullOrEmpty())
         {
             return url;
         }

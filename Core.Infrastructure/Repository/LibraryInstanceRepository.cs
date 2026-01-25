@@ -20,9 +20,9 @@ public sealed class LibraryInstanceRepository(CentralDbContext context) : ILibra
      => await context.LibraryInstances.FirstOrDefaultAsync(x=> x.Id == id, ct);
 
     /// <inheritdoc />
-    public Task RemoveAsync(LibraryInstance instance, CancellationToken ct = default)
+    public ValueTask RemovesAsync(List<LibraryInstance> instances, CancellationToken ct = default)
     {
-        context.LibraryInstances.Remove(instance);
-        return Task.CompletedTask;
+        context.LibraryInstances.RemoveRange(instances);
+        return ValueTask.CompletedTask;
     }
 }

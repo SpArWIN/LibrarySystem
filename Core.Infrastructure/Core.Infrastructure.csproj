@@ -22,6 +22,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Common.Contracts\Common.Contracts.csproj" />
       <ProjectReference Include="..\Common.Db\Common.Db.csproj" />
+      <ProjectReference Include="..\Common.Extensions\Common.Extensions.csproj" />
       <ProjectReference Include="..\Core.Domain\Core.Domain.csproj" />
     </ItemGroup>
 

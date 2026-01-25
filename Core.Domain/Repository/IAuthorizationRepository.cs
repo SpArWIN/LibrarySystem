@@ -31,23 +31,5 @@ public interface IAuthorizationRepository
     /// <param name="ct"><see cref="CancellationToken"/>.</param>
     /// <returns></returns>
     Task<RefreshSession?> FindRefreshSessionByHashAsync(string tokenHash, CancellationToken ct = default);
-
-   /// <summary>
-   /// Добавить refresh-сессию.
-   /// </summary>
-   /// <param name="session"><see cref="RefreshSession"/>.</param>
-   /// <param name="ct"><see cref="CancellationToken"/>.</param>
-    Task AddRefreshSessionAsync(RefreshSession session, CancellationToken ct = default);
-   
-  /// <summary>
-  /// Отозвать refresh-сессию (опционально указать замену при ротации).
-  /// </summary>
-  /// <param name="sessionId">Id сессии.</param>
-  /// <param name="revokedAtUtc">Дата отзыва.</param>
-  /// <param name="replacedBySessionId">Замена идентификатором сессии.</param>
-  /// <param name="ct"><see cref="CancellationToken"/>.</param>
-    Task RevokeRefreshSessionAsync(Guid sessionId, DateTimeOffset revokedAtUtc,
-      Guid? replacedBySessionId, 
-      CancellationToken ct = default);
   
 }

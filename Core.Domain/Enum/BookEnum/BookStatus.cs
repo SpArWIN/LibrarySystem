@@ -23,5 +23,10 @@ public enum BookStatus
     /// <summary>
     /// Книга утеряна.
     /// </summary>
-    Lost = 3
+    Lost = 3,
+    
+    /// <summary>
+    /// Книга забронирована.
+    /// </summary>
+    Booked = 4
 }

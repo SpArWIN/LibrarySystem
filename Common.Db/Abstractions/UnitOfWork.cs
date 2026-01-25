@@ -28,12 +28,12 @@ where TDbContext : DbContext
     /// <inheritdoc />
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
+        await Context.SaveChangesAsync(cancellationToken);
         if (_transaction is null)
         {
             return;
         }
         
-        await Context.SaveChangesAsync(cancellationToken);
         await _transaction.CommitAsync(cancellationToken);
         await DisposeTransactionAsync();
     }
@@ -83,15 +83,6 @@ where TDbContext : DbContext
         {
             await _transaction.DisposeAsync();
             _transaction = null;
-        }
-
-        if (Context is IAsyncDisposable asyncDisposable)
-        {
-            await asyncDisposable.DisposeAsync();
-        }
-        else
-        {
-            await Context.DisposeAsync();
         }
     }
 }

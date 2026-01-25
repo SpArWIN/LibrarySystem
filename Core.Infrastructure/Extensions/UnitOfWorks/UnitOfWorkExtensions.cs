@@ -28,4 +28,28 @@ public static class UnitOfWorkExtensions
     /// <returns>Репозиторий <see cref="ILibraryInstanceRepository"/>.</returns>
     public static ILibraryInstanceRepository GetLibraryInstanceRepository(this IUnitOfWork unitOfWork) =>
     unitOfWork.GetRepository<ILibraryInstanceRepository>();
+    
+    /// <summary>
+    /// Получить репозиторий.
+    /// </summary>
+    /// <param name="unitOfWork">uow.</param>
+    /// <returns>Репозиторий <see cref="IPublisherRepository"/>.</returns>
+    public static IPublisherRepository GetPublisherRepository(this IUnitOfWork unitOfWork) 
+        => unitOfWork.GetRepository<IPublisherRepository>();
+    
+    /// <summary>
+    /// Получить репозиторий.
+    /// </summary>
+    /// <param name="unitOfWork">uow.</param>
+    /// <returns>Репозиторий <see cref="IInventoryReadRepository"/>.</returns>
+    public static IInventoryReadRepository GetInventoryReadRepository(this IUnitOfWork unitOfWork) =>
+    unitOfWork.GetRepository<IInventoryReadRepository>();
+    
+    /// <summary>
+    /// Получить репозиторий.
+    /// </summary>
+    /// <param name="unitOfWork"></param>
+    /// <returns></returns>
+    public static IRefreshSessionRepository GetRefreshSessionRepository(this IUnitOfWork unitOfWork) =>
+    unitOfWork.GetRepository<IRefreshSessionRepository>();
 }

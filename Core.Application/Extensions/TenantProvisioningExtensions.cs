@@ -25,6 +25,7 @@ public static class TenantProvisioningExtensions
     {
         services.Configure<TenantProvisioningOptions>(configuration.GetSection(Section.TenantProvisioning));
         services.AddSingleton<IDatabaseProvisioner, PostgresDatabaseProvisioner>();
+        services.AddSingleton<ITenantDatabaseMigrator, TenantDatabaseMigrator>();
         services.AddScoped<ILibraryProvisioningService, LibraryProvisioningService>();
         return services;
     }

@@ -7,7 +7,7 @@ namespace Common.Db.Factory;
 /// <summary>
 /// Фабрика <see cref="IUnitOfWork"/>
 /// </summary>
-public interface IUnitOfWorkFactory<TDbContext>
+public interface IUnitOfWorkFactory<out TDbContext>
 where TDbContext : DbContext
 {
     /// <summary>

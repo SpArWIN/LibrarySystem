@@ -11,6 +11,7 @@ public sealed class AuthorizationRepository(CentralDbContext context) : IAuthori
     /// <inheritdoc />
     public async Task<User?> FindUserByUsernameAsync(string username, CancellationToken ct = default)
      => await context.Users
+         .AsQueryable()
          .Include(x=>x.UserRoles)
          .ThenInclude(x=>x.Role)
          .FirstOrDefaultAsync(x=>x.Username == username,ct);
@@ -27,6 +28,7 @@ public sealed class AuthorizationRepository(CentralDbContext context) : IAuthori
     =>  await context.RefreshSessions.FirstOrDefaultAsync(x=> x.TokenHash == tokenHash,ct);
     
 
+    /*
     /// <inheritdoc />
     public async Task AddRefreshSessionAsync(RefreshSession session, CancellationToken ct = default)
      => await context.RefreshSessions.AddAsync(session,ct);
@@ -42,5 +44,5 @@ public sealed class AuthorizationRepository(CentralDbContext context) : IAuthori
         }
         session.RevokedAtUtc = revokedAtUtc;
         session.ReplacedBySessionId = replacedBySessionId;
-    }
+    }*/
 }

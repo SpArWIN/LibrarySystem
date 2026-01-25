@@ -53,7 +53,7 @@ public interface IAuthorRepository
     /// </summary>
     /// <param name="authors">Авторы.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
-    Task AddRangeAsync(IEnumerable<Author> authors, CancellationToken cancellationToken = default);
+    Task<List<Guid>> AddRangeAsync(IEnumerable<Author> authors, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Обновить авторов.
@@ -61,7 +61,7 @@ public interface IAuthorRepository
     /// <param name="authors">Список авторов.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Список авторов.</returns>
-    Task<IEnumerable<Author>> UpdateAuthorsAsync(IEnumerable<Author> authors, 
+    ValueTask<IEnumerable<Author>> UpdateAuthorsAsync(IEnumerable<Author> authors, 
         CancellationToken cancellationToken = default);
     
     /// <summary>

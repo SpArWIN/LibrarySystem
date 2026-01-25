@@ -20,7 +20,7 @@ public interface IBucketHelperService
     /// <param name="objectName">Имя файла.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>True/False.</returns>
-    Task<bool> ExsistFileAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
+    Task<bool> ExistFileAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Удалить файл.

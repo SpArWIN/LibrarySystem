@@ -33,6 +33,9 @@ public sealed class LibraryDbContext (DbContextOptions<LibraryDbContext> options
     /// <summary>Связь книга-автор.</summary>
     public DbSet<BookAuthor> AuthorBooks { get; init; }
     
+    /// <summary>Копии книг.</summary>
+    public DbSet<BookCopy> BookCopies { get; init; }
+    
     /// <summary>
     /// Построение модели и применение конфигураций.
     /// </summary>

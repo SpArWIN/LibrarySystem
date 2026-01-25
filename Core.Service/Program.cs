@@ -21,8 +21,6 @@ builder.Logging.AddCustomLogging();
 builder.ConfigureSerilog();
 var services = builder.Services;
 var configuration = builder.Configuration;
-
-
 services.AddControllers();
 services.AddCentralDbContext(configuration);
 services.AddCommonDb<CentralDbContext>([typeof(AuthorizationRepository).Assembly]);
@@ -39,9 +37,10 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerWithXml(Assembly.GetExecutingAssembly(), typeof(JwtOptions).Assembly);
 services.AddPoliciesService();
 services.AddDefaultPolicies();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerWithUi();

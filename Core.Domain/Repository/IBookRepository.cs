@@ -1,4 +1,5 @@
 ﻿using Core.Domain.Models;
+using Core.Domain.Models.Inventory;
 using Core.Domain.Models.Pagination;
 
 namespace Core.Domain.Repository;
@@ -14,8 +15,8 @@ public interface IBookRepository
     /// <param name="pagination"><see cref="Pagination"/>.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Список книг.</returns>
-    Task<(IEnumerable<Book> Items, int TotalCount)> GetAllBooksAsync(Pagination pagination,
-        CancellationToken cancellationToken);
+    Task<(IEnumerable<BookListItem> Items, int TotalCount)> GetAllBooksAsync(Pagination pagination,
+        CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Получить список книг по их идентификаторам.
@@ -23,7 +24,8 @@ public interface IBookRepository
     /// <param name="bookIds">Список идентификаторов.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Список книг.</returns>
-    Task<IEnumerable<Book>> GetBooksByIdsAsync(IEnumerable<Guid> bookIds, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Book>> GetBooksByIdsAsync(IEnumerable<Guid> bookIds,
+        CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Для задач бизнес логики.
@@ -31,21 +33,25 @@ public interface IBookRepository
     /// <param name="batchSize">Количество.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns><see cref="Book"/>.</returns>
-    IAsyncEnumerable<Book> StreamAllAsync(int batchSize, CancellationToken cancellationToken = default);
+    IAsyncEnumerable<Book> StreamAllAsync(int batchSize, 
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить книги.
     /// </summary>
     /// <param name="booksIds">Идентификаторы книг.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
-    Task DeleteBooks(IEnumerable<Guid> booksIds, CancellationToken cancellationToken = default);
+    Task DeleteBooks(IEnumerable<Guid> booksIds,
+        CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Добавить книги.
     /// </summary>
     /// <param name="books">Идентификаторы книг.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
-    Task AddRangeAsync(IEnumerable<Book> books, CancellationToken cancellationToken = default);
+    Task<List<Guid>> AddRangeAsync(IEnumerable<Book> books,
+        CancellationToken cancellationToken = default);
+    
     
     /// <summary>
     /// Обновить книги.
@@ -53,12 +59,14 @@ public interface IBookRepository
     /// <param name="books">Список книг.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Список книг.</returns>
-    Task<IEnumerable<Book>> UpdateRangeAsync(IEnumerable<Book> books, CancellationToken cancellationToken = default);
+    ValueTask<IEnumerable<Book>> UpdateRangeAsync(IEnumerable<Book> books, 
+        CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Удалить книги из базы.
     /// </summary>
     /// <param name="bookIds">Идентификаторы книг.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
-    Task RemoveBooksIdsAsync(IEnumerable<Guid> bookIds, CancellationToken cancellationToken = default);
+    Task RemoveBooksIdsAsync(IEnumerable<Guid> bookIds, 
+        CancellationToken cancellationToken = default);
 }

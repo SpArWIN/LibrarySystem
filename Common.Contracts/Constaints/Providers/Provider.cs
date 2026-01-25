@@ -5,5 +5,8 @@
 /// </summary>
 public static class Provider
 {
+    /// <summary>
+    /// Провайдер Postgres.
+    /// </summary>
     public const string Postgres = "postgres";
 }

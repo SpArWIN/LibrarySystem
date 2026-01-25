@@ -45,7 +45,7 @@ public interface IBookAuthorsRepository
     /// Массовое удаление связей между авторами и её книгой.
     /// </summary>
     /// <param name="associations"><see cref="BookAuthor"/>.</param>
-    Task RemoveRangeAsync(IEnumerable<BookAuthor> associations);
+    ValueTask RemoveRangeAsync(IEnumerable<BookAuthor> associations);
     
     /// <summary>
     /// Проверить существует ли связь между автором и книгой.

@@ -22,6 +22,7 @@ public sealed class LibraryProvisioningService(
         CreateLibraryRequestDto request, 
         CancellationToken ct = default)
     {
+        Logger.Information("-> Process create library {Name}", request.Name);
         ArgumentNullException.ThrowIfNull(centralUow);
         ArgumentNullException.ThrowIfNull(request);
 
@@ -59,7 +60,7 @@ public sealed class LibraryProvisioningService(
                 CreatedAtUtc = now,
                 UpdatedAtUtc = now
             },ct);
-        
+            Logger.Information("<- Process create library {name} success", request.Name);
             return new CreateLibraryResponseDto{LibraryId = libraryId};
         }
         catch
@@ -79,7 +80,7 @@ public sealed class LibraryProvisioningService(
             ?? throw new NullReferenceException($"Instance with id {libraryId} not found");
         var dbName = ExtractDbNameFromConnectionString(instance.ConnectionString);
         await databaseProvisioner.DropDatabaseAsync(dbName, ct);
-        await repository.RemoveAsync(instance, ct);
+        await repository.RemovesAsync([instance], ct);
     }
     
     private static string ExtractDbNameFromConnectionString(string connectionString)

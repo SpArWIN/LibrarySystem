@@ -8,6 +8,11 @@ namespace Core.Service.Extensions;
 /// </summary>
 public static class LoggingExtensions
 {
+    /// <summary>
+    /// Добавить конфигурациию.
+    /// </summary>
+    /// <param name="builder"><see cref="WebApplicationBuilder"/>.</param>
+    /// <returns></returns>
     public static WebApplicationBuilder ConfigureSerilog(this WebApplicationBuilder builder)
     {
       
@@ -64,6 +69,11 @@ public static class LoggingExtensions
         
     }
     
+    /// <summary>
+    /// Добавить кастомную конфигурацию.
+    /// </summary>
+    /// <param name="loggingBuilder"><see cref="ILoggingBuilder"/>.</param>
+    /// <returns></returns>
     public static ILoggingBuilder AddCustomLogging(this ILoggingBuilder loggingBuilder)
     {
         loggingBuilder.ClearProviders();

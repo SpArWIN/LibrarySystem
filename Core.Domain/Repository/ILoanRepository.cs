@@ -51,7 +51,7 @@ public interface ILoanRepository
     /// </summary>
     /// <param name="loans">Коллекция записей.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
-    Task AddRangeAsync(IEnumerable<Loan> loans,
+    Task<List<Guid>> AddRangeAsync(IEnumerable<Loan> loans,
         CancellationToken cancellationToken = default);
     
     /// <summary>
@@ -103,6 +103,6 @@ public interface ILoanRepository
     /// </summary>
     /// <param name="nowUtc">Текущее время (UTC).</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
-    Task<int> CancelExpiredBookingsAsync(DateTime nowUtc, CancellationToken cancellationToken = default);
+    Task CancelExpiredBookingsAsync(DateTime nowUtc, CancellationToken cancellationToken = default);
     
 }

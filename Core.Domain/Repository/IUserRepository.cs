@@ -29,10 +29,10 @@ public interface IUserRepository
     /// <summary>
     /// Получить пользователя по логину.
     /// </summary>
-    /// <param name="userName">Логин.</param>
+    /// <param name="login">Логин.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns><see cref="User"/>.</returns>
-    Task<User?> GetUserByNameAsync(string userName,
+    Task<User?> GetUserByLoginAsync(string login,
         CancellationToken cancellationToken = default);
     
     /// <summary>

@@ -22,7 +22,7 @@ public sealed class BucketHelperService : IBucketHelperService
     }
 
     /// <inheritdoc />
-    public async Task<bool> ExsistFileAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistFileAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
     {
         return await _minioRepository.ExistsAsync(bucketName, objectName, cancellationToken);
     }

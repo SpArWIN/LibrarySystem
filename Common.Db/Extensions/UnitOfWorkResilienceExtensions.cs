@@ -1,4 +1,5 @@
-﻿using Common.Db.Abstractions;
+﻿using Common.Contracts.Settings;
+using Common.Db.Abstractions;
 using Common.Db.Factory;
 using Common.Policies.PipelineNames;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ public static class UnitOfWorkResilienceExtensions
     /// <param name="factory"><see cref="IUnitOfWorkFactory{TDbContext}"/>.</param>
     /// <param name="action">Выполняемое действие.</param>
     /// <param name="pipeline"><see cref="ResiliencePipeline"/> Политики повтора попыток.</param>
+    /// <param name="settings">Настройки подключения к конкретной базе, если необходимы.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <typeparam name="TResult">Тип результата.</typeparam>
     /// <typeparam name="TDbContext">Контекст базы данных.</typeparam>
@@ -25,11 +27,13 @@ public static class UnitOfWorkResilienceExtensions
     (this IUnitOfWorkFactory<TDbContext> factory,
         Func<IUnitOfWork, Task<TResult>> action,
         ResiliencePipeline pipeline,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        DataBaseSettings? settings = null
+        )
         where TDbContext : DbContext
         => pipeline.ExecuteAsync(async token =>
      {
-         await using var uow = await factory.CreateAsync(beginTransaction: true, token);
+         await using var uow = await factory.CreateAsync(beginTransaction: true, token, settings);
          try
          {
              var result = await action(uow);
@@ -55,6 +59,7 @@ public static class UnitOfWorkResilienceExtensions
     /// <param name="action">Выполняемое действие.</param>
     /// <param name="pipeline"><see cref="ResiliencePipeline"/> Политики повтора попыток.</param>
     /// <param name="ct"><see cref="CancellationToken"/>.</param>
+    /// <param name="settings">Настройки подключения к базе, если это необходимо.</param>
     /// <typeparam name="TResult">Тип результата.</typeparam>
     /// <typeparam name="TDbContext">Контекст базы данных.</typeparam>
     /// <returns></returns>
@@ -62,12 +67,14 @@ public static class UnitOfWorkResilienceExtensions
         this IUnitOfWorkFactory<TDbContext> factory,
         Func<IUnitOfWork, Task<TResult>> action,
         ResiliencePipeline pipeline,
-        CancellationToken ct = default)
+        CancellationToken ct = default,
+        DataBaseSettings? settings = null
+        )
     where TDbContext : DbContext
     {
         return pipeline.ExecuteAsync(async token =>
         {
-           var uow = await factory.CreateAsync(beginTransaction: false, token);
+           var uow = await factory.CreateAsync(beginTransaction: false, token, settings);
             try
             {
                 return await action(uow);

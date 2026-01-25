@@ -18,7 +18,7 @@ public static class AuthorizationExtensions
         {
             (PolicyNames.ViewDb, Permissions.ViewDb),
             (PolicyNames.CreateDb, Permissions.CreateDb),
-            (PolicyNames.IssueBook, Permissions.IssueBook),
+            (PolicyNames.IssueBook, Permissions.IssueBook)
         };
 
         services.AddAuthorization(options =>

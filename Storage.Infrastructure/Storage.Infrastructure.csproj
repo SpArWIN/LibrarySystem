@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Common.Extensions\Common.Extensions.csproj" />
       <ProjectReference Include="..\Storage.Domain\Storage.Domain.csproj" />
     </ItemGroup>
 

@@ -13,6 +13,10 @@ public sealed record LoanCriteria
     public Guid? UserId { get; init; }
     
     /// <summary>
+    /// Уникальный ключ.
+    /// </summary>
+    public string? BookKey { get; init; }
+    /// <summary>
     /// Идентификатор книги (фильтр по книге).
     /// </summary>
     public Guid? BookId { get; init; }

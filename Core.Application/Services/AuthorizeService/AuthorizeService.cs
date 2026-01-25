@@ -50,10 +50,10 @@ public sealed class AuthorizeService : IAuthorizeService
     /// <inheritdoc />
     public async Task LogoutAsync(LogoutRequestDto request, IUnitOfWork uow, CancellationToken ct = default)
     {
-        var repository = uow.GetAuthorizationRepository();
+        var repository = uow.GetRefreshSessionRepository();
         var nowUtc = DateTimeOffset.UtcNow;
         var hash = RefreshTokenCrypto.ComputeHash(request.RefreshToken, _refreshTokenOptions.Value.Pepper);
-        var session = await repository.FindRefreshSessionByHashAsync(hash, ct);
+        var session = await repository.FindByHashAsync(hash, ct);
         if (session is null)
         {
             return;
@@ -64,7 +64,7 @@ public sealed class AuthorizeService : IAuthorizeService
             return;
         }
 
-        await repository.RevokeRefreshSessionAsync(session.Id, nowUtc, null, ct);
+        await repository.RevokeAsync(session.Id, nowUtc, null, ct);
     }
 
     /// <inheritdoc />
@@ -72,6 +72,7 @@ public sealed class AuthorizeService : IAuthorizeService
     {
         Logger.Debug("-> Initial refresh request");
         var repository = uow.GetAuthorizationRepository();
+        var sessionRepository = uow.GetRefreshSessionRepository();
         var nowUtc = DateTimeOffset.UtcNow;
         var oldHash = RefreshTokenCrypto.ComputeHash(request.RefreshToken, _refreshTokenOptions.Value.Pepper);
         var oldSession = await repository.FindRefreshSessionByHashAsync(oldHash, ct)
@@ -95,9 +96,9 @@ public sealed class AuthorizeService : IAuthorizeService
         var newExpUtc = nowUtc.AddDays(_refreshTokenOptions.Value.LifetimeDays);
         var newSessionId = Guid.NewGuid();
         
-        await repository.RevokeRefreshSessionAsync(oldSession.Id, nowUtc, newSessionId, ct);
+        await sessionRepository.RevokeAsync(oldSession.Id, nowUtc, newSessionId, ct);
         
-        await repository.AddRefreshSessionAsync(new RefreshSession()
+        await sessionRepository.AddAsync(new RefreshSession()
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
@@ -118,7 +119,9 @@ public sealed class AuthorizeService : IAuthorizeService
     /// <inheritdoc />
     public async Task<AuthorizeResponse> LoginAsync(LoginRequestDto request, IUnitOfWork uow, CancellationToken ct = default)
     {
+        //TODO Закешировать данные, чтоб не отправлять постоянно в бд.
         var repository = uow.GetAuthorizationRepository();
+        var sessionRepository = uow.GetRefreshSessionRepository();
         var user = await repository.FindUserByUsernameAsync(request.Username, ct)
                    ?? throw new InvalidOperationException("Invalid credentials.");
         if (!_passwordHasher.Verify(request.Password, user.Password))
@@ -134,7 +137,7 @@ public sealed class AuthorizeService : IAuthorizeService
         var refreshHash = RefreshTokenCrypto.ComputeHash(refreshToken, _refreshTokenOptions.Value.Pepper);
         var refreshExpUtc = nowUtc.AddDays(_refreshTokenOptions.Value.LifetimeDays);
 
-        await repository.AddRefreshSessionAsync(new RefreshSession()
+        await sessionRepository.AddAsync(new RefreshSession()
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,

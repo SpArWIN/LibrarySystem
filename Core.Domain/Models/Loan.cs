@@ -13,9 +13,9 @@ public class Loan
     public Guid Id { get; init; }
 
     /// <summary>
-    /// Идентификатор книги.
+    /// Идентификатор экземпляра книги.
     /// </summary>
-    public Guid? BookId { get; init; }
+    public Guid? BookCopyId { get; init; }
 
     /// <summary>
     /// Идентификатор пользователя.
@@ -48,7 +48,7 @@ public class Loan
     public BookStatus BookStatus { get; init; }
     
     /// <summary>
-    /// Книга, которая была взята пользователем.
+    /// Книга (копия), которая была взята пользователем.
     /// </summary>
-    public Book? Book { get; init; } 
+    public BookCopy? BookCopy { get; init; } 
 }

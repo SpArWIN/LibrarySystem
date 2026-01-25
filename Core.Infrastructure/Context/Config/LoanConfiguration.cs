@@ -14,18 +14,19 @@ public class LoanConfiguration : IEntityTypeConfiguration<Loan>
     {
         builder.ToTable("Loans");
         builder.HasKey(x => x.Id);
-        builder.HasIndex(x => x.BookId);
+        builder.HasIndex(x => x.BookCopyId);
         builder.HasIndex(x => x.UserId);
-        builder.HasIndex(x => new { x.BookId, x.IsReturned });
+        builder.HasIndex(x => new { BookId = x.BookCopyId, x.IsReturned });
         builder.HasIndex(x => new { x.UserId, x.IsReturned });
         builder.HasIndex(x => x.ExpiryDate);
         builder.Property(x => x.BookStatus)
             .HasConversion<int>()
             .IsRequired();
-        
-        builder.HasOne(x => x.Book)
+
+        builder.HasOne(x => x.BookCopy)
             .WithMany()
-            .HasForeignKey(x => x.BookId);
+            .HasForeignKey(x => x.BookCopyId)
+            .OnDelete(DeleteBehavior.Restrict);
 
     }
 }

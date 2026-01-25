@@ -35,7 +35,6 @@ public sealed class PostgresDatabaseProvisioner(IOptions<TenantProvisioningOptio
         var sql = $"CREATE DATABASE \"{databaseName}\"";
         await using var cmd = new NpgsqlCommand(sql, conn);
         await cmd.ExecuteNonQueryAsync(ct);
-        await conn.CloseAsync();
     }
 
     

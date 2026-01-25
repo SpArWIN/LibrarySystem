@@ -80,7 +80,7 @@ public sealed class MinioBucketService : IMinioBucketService
     {
         try
         {
-            var status = await _bucketHelperService.ExsistFileAsync(bucketName, objectName, cancellationToken);
+            var status = await _bucketHelperService.ExistFileAsync(bucketName, objectName, cancellationToken);
             return status;
         }
         catch (ObjectNotFoundException)

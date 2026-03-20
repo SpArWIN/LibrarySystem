@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Common.Contracts\Common.Contracts.csproj" />
+      <ProjectReference Include="..\Common.Extensions\Common.Extensions.csproj" />
+      <ProjectReference Include="..\Common.Messaging.Nats.Contracts\Common.Messaging.Nats.Contracts.csproj" />
+      <ProjectReference Include="..\Common.Policies\Common.Policies.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NATS.Client.JetStream" Version="2.7.2-preview.1" />
+      <PackageReference Include="NATS.Net" Version="2.7.2-preview.1" />
+      <PackageReference Include="System.Reactive" Version="6.1.0" />
+      <PackageReference Include="System.Reactive.Linq" Version="6.1.0" />
+    </ItemGroup>
+
+</Project>

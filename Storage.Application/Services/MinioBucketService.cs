@@ -1,6 +1,8 @@
 ﻿
+using Common.Messaging.Nats.Contracts.Files;
 using Minio.Exceptions;
 using Serilog;
+using Storage.Application.Abstractions;
 using Storage.Application.Extensions;
 using Storage.Domain.Buckets;
 using Storage.Infrastructure.KeyFolder;
@@ -14,7 +16,7 @@ public sealed class MinioBucketService : IMinioBucketService
 {
     private static readonly ILogger Logger = Log.ForContext<MinioBucketService>();
     private const string AddPreload = "PreloadImage";
-
+    
     private readonly string[] _bucketsToInitialize =
     [
         MinioBuckets.Images,
@@ -23,6 +25,7 @@ public sealed class MinioBucketService : IMinioBucketService
         MinioBuckets.MetaDataImages
     ];
 
+    private readonly INatsStorage _natsStorage;
     private readonly Dictionary<string, string> _bucketToFolder;
     private readonly IImageStorageService _imageStorageService;
     private readonly IBucketHelperService _bucketHelperService;
@@ -32,11 +35,15 @@ public sealed class MinioBucketService : IMinioBucketService
     /// </summary>
     /// <param name="imageStorageService"></param>
     /// <param name="bucketHelperService"><see cref="IBucketHelperService"/>.</param>
-    public MinioBucketService(IImageStorageService imageStorageService,
-        IBucketHelperService bucketHelperService)
+    /// <param name="natsStorage"><see cref="INatsStorage"/>.</param>
+    public MinioBucketService(
+        IImageStorageService imageStorageService,
+        IBucketHelperService bucketHelperService, 
+        INatsStorage natsStorage)
     {
         _imageStorageService = imageStorageService;
         _bucketHelperService = bucketHelperService;
+        _natsStorage = natsStorage;
         var baseDir = AppContext.BaseDirectory;
         _bucketToFolder = new Dictionary<string, string>()
         {
@@ -131,8 +138,19 @@ public sealed class MinioBucketService : IMinioBucketService
                     cancellationToken
                 );
                 var messageKey = KeyGenerator.GenerateKey(bucketName, objectKey);
+                var publicUrlImage =
+                    await _imageStorageService.GetImageUrlAsync(bucketName, fileName, cancellationToken);
+                await _natsStorage.PublishPreloadedImageAddedAsync(new PreloadedImageAdded()
+                {
+                    Bucket         = bucketName,
+                    ObjectKey      = objectKey,
+                    PublicUrl      = publicUrlImage,
+                    ContentType    = contentType,
+                    SizeBytes      = new FileInfo(filePath).Length,
+                    SourceFileName = fileName,
+                    UploadedAtUtc  = DateTime.UtcNow
+                }, cancellationToken);
                 
-                //TODO тут отправить в Nats.
             }
             catch (IOException e)
             {

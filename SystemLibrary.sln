@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{E583CB04-8E14-412F-991A-A1FB216F5A29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Messaging", "Common.Messaging\Common.Messaging.csproj", "{CC08F395-6E0C-40D2-9224-62DB167A7319}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Messaging.Nats", "Common.Messaging.Nats\Common.Messaging.Nats.csproj", "{CC08F395-6E0C-40D2-9224-62DB167A7319}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Validation", "Common.Validation\Common.Validation.csproj", "{25CE39BF-2542-4CF4-9D76-A50705BA7623}"
 EndProject
@@ -44,6 +44,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Cached", "Common.Cac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Extensions", "Common.Extensions\Common.Extensions.csproj", "{DC4B5857-DEA5-4878-A95B-BB7464293088}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Messaging.Nats.Contracts", "Common.Messaging.Nats.Contracts\Common.Messaging.Nats.Contracts.csproj", "{4352E071-94E3-4996-801D-C6BEE306F406}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,7 @@ Global
 		{9406AC02-4CCE-484E-BE79-2886B64A8CC4} = {01CF7663-FFEA-4103-BE08-AE41EF310901}
 		{B9F2135D-3F22-435F-AF54-E7B270ACA771} = {E583CB04-8E14-412F-991A-A1FB216F5A29}
 		{DC4B5857-DEA5-4878-A95B-BB7464293088} = {E583CB04-8E14-412F-991A-A1FB216F5A29}
+		{4352E071-94E3-4996-801D-C6BEE306F406} = {E583CB04-8E14-412F-991A-A1FB216F5A29}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{CC08F395-6E0C-40D2-9224-62DB167A7319}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -147,5 +150,9 @@ Global
 		{DC4B5857-DEA5-4878-A95B-BB7464293088}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC4B5857-DEA5-4878-A95B-BB7464293088}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC4B5857-DEA5-4878-A95B-BB7464293088}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4352E071-94E3-4996-801D-C6BEE306F406}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4352E071-94E3-4996-801D-C6BEE306F406}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4352E071-94E3-4996-801D-C6BEE306F406}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4352E071-94E3-4996-801D-C6BEE306F406}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

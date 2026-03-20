@@ -34,4 +34,14 @@ public static class Section
     /// Настройки базовой установки ноовго контекста дополнительной базы данных.
     /// </summary>
     public const string LibraryDbContextFactory = nameof(LibraryDbContextFactory);
+    
+    /// <summary>
+    /// Секция Nats.
+    /// </summary>
+    public const string Nats = nameof(Nats);
+    
+    /// <summary>
+    /// Секция JetStream
+    /// </summary>
+    public const string JetStream = nameof(JetStream);
 }

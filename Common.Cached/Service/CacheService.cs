@@ -87,10 +87,7 @@ public sealed class CacheService : ICacheService
         try
         {
             var value = await factory();
-            if (value is not null)
-            {
-                await SetAsync(cacheKey, value, expiration, ct);
-            }
+            await SetAsync(cacheKey, value, expiration, ct);
 
             return value;
         }
@@ -104,7 +101,7 @@ public sealed class CacheService : ICacheService
         }
     }
 
-    private string GetCacheKey<TKey>(TKey key)
+    private static string GetCacheKey<TKey>(TKey key)
         where TKey : notnull
         => key switch
         {

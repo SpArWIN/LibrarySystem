@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="NATS.Net" Version="2.7.2-preview.1" />
       <PackageReference Include="Polly" Version="8.6.0" />
       <PackageReference Include="Polly.Core" Version="8.6.0" />
       <PackageReference Include="Polly.Extensions" Version="8.6.0" />

@@ -16,11 +16,25 @@ public static class NamesPipeline
     
     public static class Nats
     {
-        /// <summary>Публикации.</summary>
+        /// <summary>
+        /// Пайплайн публикации.
+        /// </summary>
         public const string Publish = nameof(Publish);
-
-        /// <summary>Подписки.</summary>
-        public const string Subscribe = nameof(Subscribe);
+        
+        /// <summary>
+        /// Пайплайн запроса.
+        /// </summary>
+        public const string Request = nameof(Request);
+        
+        /// <summary>
+        /// Пайплайн подключения.
+        /// </summary>
+        public const string Connect = nameof(Connect);
+        
+        /// <summary>
+        /// Пайплайн JetStream.
+        /// </summary>
+        public const string JetStream = nameof(JetStream);
     }
     
     public static class Http

@@ -33,7 +33,6 @@ services.AddApplicationServices(configuration);
 services.AddJwtAuthentication(configuration);
 services.AddPermissionPolicies();
 services.AddHttpAccessor();
-services.AddEndpointsApiExplorer();
 services.AddSwaggerWithXml(Assembly.GetExecutingAssembly(), typeof(JwtOptions).Assembly);
 services.AddPoliciesService();
 services.AddDefaultPolicies();

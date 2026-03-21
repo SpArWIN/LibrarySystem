@@ -20,9 +20,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common.Contracts\Common.Contracts.csproj" />
-      <ProjectReference Include="..\Common.Db\Common.Db.csproj" />
-      <ProjectReference Include="..\Common.Extensions\Common.Extensions.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Contracts\Common.Contracts.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Db\Common.Db.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Extensions\Common.Extensions.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Http\Common.Http.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Policies\Common.Policies.csproj" />
       <ProjectReference Include="..\Core.Domain\Core.Domain.csproj" />
     </ItemGroup>
 

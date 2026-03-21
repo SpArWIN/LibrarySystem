@@ -13,7 +13,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Common.Contracts\Common.Contracts.csproj" />
-      <ProjectReference Include="..\Common.Http\Common.Http.csproj" />
       <ProjectReference Include="..\Common.Policies\Common.Policies.csproj" />
     </ItemGroup>
 

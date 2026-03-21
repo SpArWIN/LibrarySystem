@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common.Messaging.Nats.Contracts\Common.Messaging.Nats.Contracts.csproj" />
-      <ProjectReference Include="..\Common.Messaging.Nats\Common.Messaging.Nats.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Messaging.Nats.Contracts\Common.Messaging.Nats.Contracts.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Messaging.Nats\Common.Messaging.Nats.csproj" />
       <ProjectReference Include="..\Storage.Infrastructure\Storage.Infrastructure.csproj" />
     </ItemGroup>
 

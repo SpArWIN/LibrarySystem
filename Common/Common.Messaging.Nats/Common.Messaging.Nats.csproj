@@ -11,7 +11,7 @@
       <ProjectReference Include="..\Common.Extensions\Common.Extensions.csproj" />
       <ProjectReference Include="..\Common.Messaging.Nats.Contracts\Common.Messaging.Nats.Contracts.csproj" />
       <ProjectReference Include="..\Common.Policies\Common.Policies.csproj" />
-    </ItemGroup>
+         </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="NATS.Client.JetStream" Version="2.7.2-preview.1" />

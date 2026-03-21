@@ -13,20 +13,20 @@ public abstract class DataBaseFixture : IAsyncLifetime
 {
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private IServiceProvider _serviceProvider = null!;
-    private  bool _initialized = false;
-    private bool _isDisposed = false;
+    private  bool _initialized;
+    private bool _isDisposed;
 
     /// <summary>Контейнер бд.</summary>
     protected IContainer? DataBaseContainer { get; }
 
     /// <summary>Admin connection string (к серверу/системной БД).</summary>
-    public string AdminConnectionString { get; private set; } = null!;
+    private string AdminConnectionString { get; set; } = null!;
     
     
     /// <summary>
     /// Строка подключения к центральной базе данныз. БД.
     /// </summary>
-    public string CentralConnectionString { get; protected set; } = null!;
+    protected string CentralConnectionString { get; private set; } = null!;
     
     /// <summary>
     /// Поставщик.
@@ -38,12 +38,12 @@ public abstract class DataBaseFixture : IAsyncLifetime
     /// <summary>
     /// Конфигурация.
     /// </summary>
-    public IConfiguration Configuration { get; private set; } = null!;
+    protected IConfiguration Configuration { get; private set; } = null!;
 
     /// <summary>
     /// Имя тестовой базы данных.
     /// </summary>
-    public string DatabaseName { get; }
+    private string DatabaseName { get; }
     
     /// <summary>
     /// Конструктор.

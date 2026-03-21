@@ -29,10 +29,7 @@ namespace Core.Tests.Integration.Fixture;
 /// </summary>
 public sealed class PostgresFixture : DataBaseFixture
 {
-    private PostgreSqlContainer PostgresContainer => (PostgreSqlContainer)DataBaseContainer;
-
-    public PostgresFixture()
-    { }  
+    private PostgreSqlContainer? PostgresContainer => (PostgreSqlContainer)DataBaseContainer;
 
     /// <inheritdoc />
     protected override string BuildAdminConnectionString(string baseConnectionString)
@@ -116,7 +113,7 @@ public sealed class PostgresFixture : DataBaseFixture
 
     private IServiceCollection ConfigurateTentantOptionst(IServiceCollection services)
     {
-        var adminConnectionString = ForceDataBase(PostgresContainer.GetConnectionString(), Provider.Postgres);
+        var adminConnectionString = ForceDataBase(PostgresContainer?.GetConnectionString(), Provider.Postgres);
         services.AddSingleton<IOptions<TenantProvisioningOptions>>(_ =>
             Options.Create(new TenantProvisioningOptions()
         {

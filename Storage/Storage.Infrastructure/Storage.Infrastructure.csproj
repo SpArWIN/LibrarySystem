@@ -7,11 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common.Contracts\Common.Contracts.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Minio" Version="6.0.0" />
+      <ProjectReference Include="..\..\Common\Common.Extensions\Common.Extensions.csproj" />
+      <ProjectReference Include="..\Storage.Domain\Storage.Domain.csproj" />
     </ItemGroup>
 
 </Project>

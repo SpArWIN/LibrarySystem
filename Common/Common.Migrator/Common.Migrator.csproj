@@ -26,12 +26,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Core.Infrastructure\Core.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Core\Core.Infrastructure\Core.Infrastructure.csproj" />
+      <ProjectReference Include="..\Common.Contracts\Common.Contracts.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <Content Include="..\Core.Infrastructure\bin\Debug\net9.0\Core.Infrastructure.dll">
-            <Link>Core.Infrastructure.dll</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
+
+ 
 </Project>

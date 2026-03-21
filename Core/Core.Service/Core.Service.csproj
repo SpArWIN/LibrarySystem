@@ -15,13 +15,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common.Db\Common.Db.csproj" />
+      
+          
       <ProjectReference Include="..\Core.Application\Core.Application.csproj" />
       <ProjectReference Include="..\Core.Infrastructure\Core.Infrastructure.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Abstractions\" />
     </ItemGroup>
 
 </Project>

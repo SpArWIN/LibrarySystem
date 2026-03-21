@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Common\Common.Messaging.Nats.Contracts\Common.Messaging.Nats.Contracts.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Messaging.Nats\Common.Messaging.Nats.csproj" />
+      <ProjectReference Include="..\Storage.Infrastructure\Storage.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

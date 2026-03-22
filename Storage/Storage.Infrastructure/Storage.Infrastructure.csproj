@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.Extensions\Common.Extensions.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Logging\Common.Logging.csproj" />
       <ProjectReference Include="..\Storage.Domain\Storage.Domain.csproj" />
     </ItemGroup>
 

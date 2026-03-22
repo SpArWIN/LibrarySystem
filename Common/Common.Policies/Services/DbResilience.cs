@@ -24,4 +24,6 @@ public sealed class DbResilience(ResiliencePipelineProvider<string> provider) : 
     
     /// <inheritdoc />
     public ResiliencePipeline NatsJetStream  => provider.GetPipeline(NamesPipeline.Nats.JetStream);
+
+    public ResiliencePipeline DatabaseConnect => provider.GetPipeline(NamesPipeline.DbPipelines.Connect);
 }

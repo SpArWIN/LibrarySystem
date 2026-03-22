@@ -1,4 +1,6 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Common.Contracts.Claims;
 using Common.Contracts.Settings;
 using Common.Http.Accessors;

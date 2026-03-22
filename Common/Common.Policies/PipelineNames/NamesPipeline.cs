@@ -7,6 +7,9 @@ public static class NamesPipeline
 {
     public static class DbPipelines
     {
+        /// <summary>Пайплайн для соединения с БД.</summary>
+        public const string Connect = nameof(Connect);
+        
         /// <summary>Пайплайн для write-операций БД (транзакции).</summary>
         public const string Write = nameof(Write);
         

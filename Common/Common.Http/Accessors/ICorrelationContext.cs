@@ -1,4 +1,6 @@
-﻿namespace Common.Http.Accessors;
+﻿using System;
+
+namespace Common.Http.Accessors;
 
 /// <summary>
 /// Контекст корреляции запросов.

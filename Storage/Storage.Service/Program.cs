@@ -1,7 +1,6 @@
-using Common.Policies.Di;
+using Common.Logging.Extensions;
 using Storage.Application.Extensions;
 using Storage.Service.Configuration;
-using Storage.Service.Extensions;
 using Storage.Service.Initializer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +12,7 @@ builder.Services.AddHealthChecks();
 builder.Services.AddHostedService<MiniOInitializer>();
 
 builder.Configuration.AddSerilogConfiguration(builder.Environment.EnvironmentName);
-builder.ConfigureSerilog();
+builder.Host.UseSerilog("Storage.Service");
 builder.Logging.AddCustomLogging();
 var app = builder.Build();
 

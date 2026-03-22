@@ -44,4 +44,9 @@ public static class Section
     /// Секция JetStream
     /// </summary>
     public const string JetStream = nameof(JetStream);
+    
+    /// <summary>
+    /// Секция для настроек логгов.
+    /// </summary>
+    public const string Logging = nameof(Logging);
 }

@@ -36,4 +36,15 @@ public interface IUnitOfWork : IAsyncDisposable
     
     /// <summary>Активна ли транзакция.</summary>
     bool HasActiveTransaction { get; }
+
+    /// <summary>
+    /// Добавить действие, которое выполнится перед коммитом.
+    /// </summary>
+    /// <param name="action">Действие для коммита.</param>
+    void AddPreCommit(Func<IUnitOfWork, CancellationToken, Task> action);
+    
+    /// <summary>
+    /// Добавить действие, которое выполнится после успешного коммита.
+    /// </summary>
+    void AddPostCommit(Func<IUnitOfWork, CancellationToken, Task> action);
 }

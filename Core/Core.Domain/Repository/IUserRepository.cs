@@ -52,10 +52,11 @@ public interface IUserRepository
     /// </summary>
     /// <returns>Слоаврь, где ID- идентификатор пользователя. Значение, его роль.</returns>
     Task<Dictionary<Guid, string>> GetRolesUser();
-    
+
     /// <summary>
     /// Добавить пользователей.
     /// </summary>
     /// <param name="users"><see cref="User"/> Список пользователей.</param>
-    Task AddUsersAsync(IEnumerable<User> users);
+    /// <param name="ct"><see cref="CancellationToken"/>.</param>
+    Task AddUsersAsync(IEnumerable<User> users, CancellationToken ct = default);
 }

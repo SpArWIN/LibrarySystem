@@ -10,6 +10,8 @@ where TDbContext : DbContext
 {
     private readonly IRepositoryFactory<TDbContext> _repoFactory;
     private IDbContextTransaction? _transaction;
+    private Lazy<List<Func<IUnitOfWork, CancellationToken, Task>>> _precommitActions;
+    private Lazy<List<Func<IUnitOfWork, CancellationToken, Task>>>? _postcommitActions;
 
     /// <summary>
     /// Конструктор.
@@ -21,21 +23,42 @@ where TDbContext : DbContext
         TDbContext context)
     {
         _repoFactory = repoFactory;
-        Context = context  ?? throw new ArgumentNullException(nameof(context));;
+        Context = context  ?? throw new ArgumentNullException(nameof(context));
+        
+        _precommitActions = new Lazy<List<Func<IUnitOfWork, CancellationToken, Task>>>(
+            () => [], LazyThreadSafetyMode.None);
+        
+        _postcommitActions = new Lazy<List<Func<IUnitOfWork, CancellationToken, Task>>>(
+            () => [], LazyThreadSafetyMode.None);
     }
     
     
     /// <inheritdoc />
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        await Context.SaveChangesAsync(cancellationToken);
         if (_transaction is null)
         {
+            await Context.SaveChangesAsync(cancellationToken);
             return;
         }
+
+        try
+        {
+            await ExecutePreCommitAsync(cancellationToken);
+            await Context.SaveChangesAsync(cancellationToken);
+            await _transaction.CommitAsync(cancellationToken);
+            await ExecutePostCommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await RollbackAsync(cancellationToken);
+            throw;
+        }
+        finally
+        {
+            await DisposeTransactionAsync();
+        }
         
-        await _transaction.CommitAsync(cancellationToken);
-        await DisposeTransactionAsync();
     }
 
     /// <inheritdoc />
@@ -76,6 +99,45 @@ where TDbContext : DbContext
 
     /// <inheritdoc />
     public bool HasActiveTransaction  => _transaction is not null;
+
+    /// <inheritdoc />
+    public void AddPreCommit(Func<IUnitOfWork, CancellationToken, Task> action)
+    {
+        PreCommitActions?.Add(action);
+    }
+
+    /// <inheritdoc />
+    public void AddPostCommit(Func<IUnitOfWork, CancellationToken, Task> action)
+    {
+        PostCommitActions?.Add(action);
+    }
+
+    private async Task ExecutePreCommitAsync(CancellationToken ct = default)
+    {
+        if (!_precommitActions.IsValueCreated)
+        {
+            return;
+        }
+
+        foreach (var action in PreCommitActions)
+        {
+            await action(this, ct);
+        }
+    }
+
+    private async Task ExecutePostCommitAsync(CancellationToken ct = default)
+    {
+        if (!_postcommitActions.IsValueCreated)
+        {
+            foreach (var action in PostCommitActions)
+            {
+                await action(this, ct);
+            }
+        }
+    }
+
+    private List<Func<IUnitOfWork, CancellationToken, Task>>? PreCommitActions => _precommitActions?.Value;
+    private List<Func<IUnitOfWork, CancellationToken, Task>>? PostCommitActions => _postcommitActions?.Value;
     
     private async Task DisposeTransactionAsync()
     {

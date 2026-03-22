@@ -96,6 +96,7 @@ public sealed class PostgresFixture : DataBaseFixture
                 o => o.MigrationsAssembly(typeof(CentralDbContext).Assembly.GetName().Name)));
         
        services.AddCommonDb<LibraryDbContext>([typeof(BookRepository).Assembly]);
+       services.AddCommonDb<CentralDbContext>([typeof(LoanRepository).Assembly]);
        services.AddContextConfiguration(Configuration);
        
        ConfigurateTentantOptionst(services);

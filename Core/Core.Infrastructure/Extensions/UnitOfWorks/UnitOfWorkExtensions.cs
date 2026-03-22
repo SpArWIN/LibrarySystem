@@ -48,8 +48,24 @@ public static class UnitOfWorkExtensions
     /// <summary>
     /// Получить репозиторий.
     /// </summary>
-    /// <param name="unitOfWork"></param>
-    /// <returns></returns>
+    /// <param name="unitOfWork">.</param>
+    /// <returns><see cref="IRefreshSessionRepository"/>.</returns>
     public static IRefreshSessionRepository GetRefreshSessionRepository(this IUnitOfWork unitOfWork) =>
     unitOfWork.GetRepository<IRefreshSessionRepository>();
+    
+    /// <summary>
+    /// Получить репозиторий.
+    /// </summary>
+    /// <param name="unitOfWork"></param>
+    /// <returns><see cref="ILoanRepository"/>.</returns>
+    public static ILoanRepository GetLoanRepository(this IUnitOfWork unitOfWork) =>
+    unitOfWork.GetRepository<ILoanRepository>();
+    
+    /// <summary>
+    /// Получить репозиторий.
+    /// </summary>
+    /// <param name="unitOfWork"><see cref="IUnitOfWork"/>.</param>
+    /// <returns><see cref="IUserRepository"/>.</returns>
+    public static IUserRepository GetUserRepository(this IUnitOfWork unitOfWork) =>
+    unitOfWork.GetRepository<IUserRepository>();
 }

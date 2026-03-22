@@ -1,0 +1,51 @@
+services:
+  minio:
+    image: minio/minio:latest
+    profiles:
+      - "library"
+      - "dev"
+    volumes:
+      - minio-data:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    command: [ "server","/data","--console-address",":9001" ]
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      timeout: 20s
+      retries: 10
+      start_period: 30s
+    networks: [ default, npm_proxy ]
+    restart: unless-stopped
+    
+  postgres:
+    image: postgres:13.20-alpine
+    container_name: library_postgres
+    environment:
+      POSTGRES_DB: library_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - library_network
+  
+  nats:
+    image: nats:2.10-alpine
+    container_name: library_nats
+    command: [ "-js", "-sd", "/data" ]
+    ports:
+      - "4222:4222"   
+      - "8222:8222"  
+      - "6222:6222"  
+    volumes:
+      - nats_data:/data
+    networks:
+      - library_network
+    restart: unless-stopped
+    environment:
+      - NATS_JS_DOMAIN=library 
+      - NATS_HTTP_PORT=8222
+  

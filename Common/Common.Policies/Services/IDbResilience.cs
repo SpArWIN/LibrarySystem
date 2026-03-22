@@ -36,4 +36,9 @@ public interface IDbResilience
     /// Политика NatsJetStream.
     /// </summary>
     ResiliencePipeline NatsJetStream { get; }
+    
+    /// <summary>
+    /// Политика подключения к базе данных.
+    /// </summary>
+    ResiliencePipeline DatabaseConnect { get; }
 }

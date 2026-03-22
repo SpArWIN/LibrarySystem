@@ -52,6 +52,20 @@ public static class ResilienceRegistrationExtensions
                 IsEfTransient
             );
         });
+
+        services.AddResiliencePipeline(NamesPipeline.DbPipelines.Connect, builder =>
+        {
+            builder.AddJitterPolicy(
+                new RetryOptions()
+                {
+                    MaxRetryAttempts = 5,
+                    BaseDelay = TimeSpan.FromMilliseconds(300),
+                    Backoff = DelayBackoffType.Exponential,
+                    UseJitter = true
+                },
+                IsEfTransient
+            );
+        });
         
         services.AddResiliencePipeline(NamesPipeline.Http.Outbound, builder =>
         {

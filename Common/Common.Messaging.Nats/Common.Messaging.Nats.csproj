@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Common.Contracts\Common.Contracts.csproj" />
       <ProjectReference Include="..\Common.Extensions\Common.Extensions.csproj" />
+      <ProjectReference Include="..\Common.Logging\Common.Logging.csproj" />
       <ProjectReference Include="..\Common.Messaging.Nats.Contracts\Common.Messaging.Nats.Contracts.csproj" />
       <ProjectReference Include="..\Common.Policies\Common.Policies.csproj" />
          </ItemGroup>

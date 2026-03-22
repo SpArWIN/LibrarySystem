@@ -1,22 +1,21 @@
-﻿using Common.Contracts.Settings;
+using Common.Contracts.Settings;
 using Common.Db.Factory;
 using Core.Infrastructure;
 using Core.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Serilog;
+
+
 namespace Common.Migrator.Services;
 
-/// <summary>
-/// Фоновый сервис миграций.
-/// </summary>
-public class MigrationHostedService : BackgroundService
+/// <inheritdoc />
+public sealed class DatabaseMigrator : IDatabaseMigrator
 {
-    private static readonly ILogger Logger = Log.ForContext<MigrationHostedService>();
+    
+    private static readonly ILogger Logger = Log.ForContext<DatabaseMigrator>();
     private readonly IServiceProvider _serviceProvider;
-    private readonly IHostApplicationLifetime _lifetime;
     private readonly IAppDbContextFactory<LibraryDbContext> _dbContextFactory;
     private readonly IOptions<TenantDatabaseOptions> _options;
 
@@ -24,43 +23,38 @@ public class MigrationHostedService : BackgroundService
     /// Конструктор.
     /// </summary>
     /// <param name="serviceProvider"><see cref="IServiceProvider"/>.</param>
-    /// <param name="lifetime"><see cref="IHostApplicationLifetime"/>.</param>
-    /// <param name="libraryDbContextFactory"><see cref="IAppDbContextFactory{TDbContext}"/>.</param>
+    /// <param name="dbContextFactory"><see cref="IAppDbContextFactory{TDbContext}"/>.</param>
     /// <param name="options"><see cref="TenantDatabaseOptions"/>.</param>
-    public MigrationHostedService(
-        IServiceProvider serviceProvider, 
-        IHostApplicationLifetime lifetime,
-        IAppDbContextFactory<LibraryDbContext> libraryDbContextFactory, 
-        IOptions<TenantDatabaseOptions> options
-        )
+    public DatabaseMigrator(IServiceProvider serviceProvider,
+        IAppDbContextFactory<LibraryDbContext> dbContextFactory, IOptions<TenantDatabaseOptions> options)
     {
         _serviceProvider = serviceProvider;
-        _lifetime = lifetime;
+        _dbContextFactory = dbContextFactory;
         _options = options;
-        _dbContextFactory = libraryDbContextFactory;
     }
-
+    
     /// <inheritdoc />
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task MigrateAllAsync(CancellationToken cancellationToken = default)
     {
         try
         {
+            Logger.Debug("-> Migrating all database");
             using var scope = _serviceProvider.CreateScope();
             var central = scope.ServiceProvider.GetRequiredService<CentralDbContext>();
             Logger.Information(" -> Migrating CentralDb");
-            await central.Database.MigrateAsync(stoppingToken);
+            await central.Database.MigrateAsync(cancellationToken);
 
             var instances = await central.LibraryInstances
                 .AsNoTracking()
                 .Select(x => new { x.Id, x.ConnectionString, x.MigrationsAssembly })
-                .ToListAsync(stoppingToken);
+                .ToListAsync(cancellationToken);
 
             Logger.Information(" -> Found {Count} library instances", instances.Count);
 
 
             foreach (var i in instances)
             {
-                stoppingToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
                 if (string.IsNullOrWhiteSpace(i.ConnectionString))
                 {
                     Logger.Warning("Skipping library {Id}: empty ConnectionString", i.Id);
@@ -77,12 +71,12 @@ public class MigrationHostedService : BackgroundService
 
                 };
                 await using var libraryDb = _dbContextFactory.Create(settings);
-                
+
                 Logger.Information(" -> Migrating library db {Id}", i.Id);
-                var pending = await libraryDb.Database.GetPendingMigrationsAsync(stoppingToken);
+                var pending = await libraryDb.Database.GetPendingMigrationsAsync(cancellationToken);
                 Logger.Information("Pending migrations for {Id}: {Count}", i.Id, pending.Count());
-                
-                await libraryDb.Database.MigrateAsync(stoppingToken);
+
+                await libraryDb.Database.MigrateAsync(cancellationToken);
                 Logger.Information(" <- Migrating Done");
             }
         }
@@ -96,7 +90,7 @@ public class MigrationHostedService : BackgroundService
         }
         finally
         {
-            _lifetime.StopApplication();
+            Logger.Debug("<- Migrated all database");
         }
     }
 }

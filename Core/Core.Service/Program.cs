@@ -3,6 +3,7 @@ using Common.Contracts.Settings;
 using Common.Db.Extensions;
 using Common.Http.Extensions;
 using Common.Http.Middleware;
+using Common.Logging.Extensions;
 using Common.Policies.Di;
 using Core.Application.Extensions;
 using Core.Infrastructure;
@@ -16,9 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Configuration.AddEnvironmentVariables("LIBRARY__");
-
+builder.Host.UseSerilog("Core.Service");
 builder.Logging.AddCustomLogging();
-builder.ConfigureSerilog();
+
 var services = builder.Services;
 var configuration = builder.Configuration;
 services.AddControllers();
@@ -32,7 +33,7 @@ services.AddTenantProvisioningServices(configuration);
 services.AddApplicationServices(configuration);
 services.AddJwtAuthentication(configuration);
 services.AddPermissionPolicies();
-services.AddHttpAccessor();
+services.AddHttpContextAccessor();
 services.AddSwaggerWithXml(Assembly.GetExecutingAssembly(), typeof(JwtOptions).Assembly);
 services.AddPoliciesService();
 services.AddDefaultPolicies();

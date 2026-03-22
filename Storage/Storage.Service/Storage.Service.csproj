@@ -19,6 +19,7 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
+      <Folder Include="Extensions\" />
       <Folder Include="PreloadImage\metadata-images\" />
     </ItemGroup>
 </Project>

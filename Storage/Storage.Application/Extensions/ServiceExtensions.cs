@@ -3,7 +3,6 @@ using Common.Messaging.Nats.Extensions;
 using Common.Policies.Di;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Minio;
 using Storage.Application.Abstractions;
 using Storage.Application.Constaints.Section;

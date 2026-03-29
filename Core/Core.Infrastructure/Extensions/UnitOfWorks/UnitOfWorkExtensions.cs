@@ -68,4 +68,12 @@ public static class UnitOfWorkExtensions
     /// <returns><see cref="IUserRepository"/>.</returns>
     public static IUserRepository GetUserRepository(this IUnitOfWork unitOfWork) =>
     unitOfWork.GetRepository<IUserRepository>();
+    
+    /// <summary>
+    /// Получить репозиторий.
+    /// </summary>
+    /// <param name="unitOfWork"><see cref="IUnitOfWork"/>.</param>
+    /// <returns><see cref="IBookCopyRepository"/>.</returns>
+    public static IBookCopyRepository GetBookCopyRepository(this IUnitOfWork unitOfWork) =>
+    unitOfWork.GetRepository<IBookCopyRepository>();
 }

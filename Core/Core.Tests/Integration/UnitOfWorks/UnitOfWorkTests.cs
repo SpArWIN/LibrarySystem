@@ -47,13 +47,17 @@ public class UnitOfWorkTests(PostgresFixture fixture)
 
     }
     
+    /// <summary>
+    /// Получить активные, не возвращёныые выдачи по списку пользователей.
+    /// </summary>
     [Fact]
     public async Task GetActiveByUsersAsync_CreateActivityUsers_ReturnActivityLoan()
     {
         // arrange
         var settings = await CreateDataBaseAndMigrateTentantAsync();
         var userId = Guid.NewGuid();
-        var bookCopyId = Guid.NewGuid();
+      
+        var bookId = Guid.NewGuid();
         await _centralFactory.CreateWithRetryAsync(action: async centralDb =>
         {
             centralDb.AddPreCommit(async (uow, ct) =>
@@ -82,7 +86,33 @@ public class UnitOfWorkTests(PostgresFixture fixture)
             await userRepository.AddUsersAsync(new[] { user });
             return user.Id;
 
+            
         }, pipeline: _dbResilience.Write);
+
+        await _unitOfWorkFactory.CreateWithRetryAsync(action:async libraryUow =>
+        {
+            var bookRepository = libraryUow.GetBookRepository();
+            var publisherRepository = libraryUow.GetPublisherRepository();
+            var publisher = new Publisher()
+            {
+                Id = Guid.NewGuid(),
+                PublisherName = "Name",
+                Address = "Address",
+            };
+            var publisherId = await  publisherRepository.AddPublishersAsync([publisher]);
+            var book = new Book()
+            {
+                Id = bookId,
+                Description = "Loan book",
+                TotalCopies = 5,
+                BookKey = "Key" + Guid.NewGuid(),
+                PublisherId = publisherId.FirstOrDefault(),
+                Title = "MainBook",
+            };
+           return await bookRepository.AddRangeAsync([book]);
+           
+            
+        }, _dbResilience.Write, settings:settings);
         
         await _unitOfWorkFactory.CreateWithRetryAsync(async libraryUow =>
         {
@@ -91,7 +121,6 @@ public class UnitOfWorkTests(PostgresFixture fixture)
                 var loanRepo = uow.GetLoanRepository();
                 var activeLoans = await loanRepo.GetActiveByUsersAsync(new[] { userId }, ct);
                 
-                var bookCopy = libraryUow.
                 if (activeLoans.Any())
                     throw new InvalidOperationException("User already has active loans");
             });
@@ -101,13 +130,15 @@ public class UnitOfWorkTests(PostgresFixture fixture)
                 Console.WriteLine($"Loan created for user {userId} at {DateTime.UtcNow}");
                 return Task.CompletedTask;
             });
-            
+          
             var loanRepo = libraryUow.GetLoanRepository();
+            var bookCopyRepo = libraryUow.GetBookCopyRepository();
+            var bookCopyId = await bookCopyRepo.GetCopiesIdsByBookIdAsync([bookId]);
             var loan = new Loan
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
-                BookCopyId = bookCopyId,
+                BookCopyId = bookCopyId.FirstOrDefault(),
                 LoanDate = DateTime.UtcNow,
                 ExpiryDate = DateTime.UtcNow.AddDays(14),
                 IsReturned = false,

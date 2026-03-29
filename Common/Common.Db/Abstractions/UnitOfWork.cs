@@ -1,6 +1,8 @@
-﻿using Common.Db.Factory;
+﻿using System.Collections.Concurrent;
+using Common.Db.Factory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace Common.Db.Abstractions;
 
@@ -10,8 +12,8 @@ where TDbContext : DbContext
 {
     private readonly IRepositoryFactory<TDbContext> _repoFactory;
     private IDbContextTransaction? _transaction;
-    private Lazy<List<Func<IUnitOfWork, CancellationToken, Task>>> _precommitActions;
-    private Lazy<List<Func<IUnitOfWork, CancellationToken, Task>>>? _postcommitActions;
+    private readonly Lazy<ConcurrentQueue<Func<IUnitOfWork, CancellationToken, Task>>> _preCommitActions;
+    private readonly Lazy<ConcurrentQueue<Func<IUnitOfWork, CancellationToken, Task>>> _postCommitActions;
 
     /// <summary>
     /// Конструктор.
@@ -24,12 +26,11 @@ where TDbContext : DbContext
     {
         _repoFactory = repoFactory;
         Context = context  ?? throw new ArgumentNullException(nameof(context));
-        
-        _precommitActions = new Lazy<List<Func<IUnitOfWork, CancellationToken, Task>>>(
-            () => [], LazyThreadSafetyMode.None);
-        
-        _postcommitActions = new Lazy<List<Func<IUnitOfWork, CancellationToken, Task>>>(
-            () => [], LazyThreadSafetyMode.None);
+
+        _preCommitActions = new Lazy<ConcurrentQueue<Func<IUnitOfWork, CancellationToken, Task>>>(
+            LazyThreadSafetyMode.ExecutionAndPublication);
+        _postCommitActions = new Lazy<ConcurrentQueue<Func<IUnitOfWork, CancellationToken, Task>>>(
+            () => [], LazyThreadSafetyMode.ExecutionAndPublication);
     }
     
     
@@ -49,10 +50,10 @@ where TDbContext : DbContext
             await _transaction.CommitAsync(cancellationToken);
             await ExecutePostCommitAsync(cancellationToken);
         }
-        catch
+        catch(Exception ex)
         {
             await RollbackAsync(cancellationToken);
-            throw;
+            throw ex;
         }
         finally
         {
@@ -103,23 +104,23 @@ where TDbContext : DbContext
     /// <inheritdoc />
     public void AddPreCommit(Func<IUnitOfWork, CancellationToken, Task> action)
     {
-        PreCommitActions?.Add(action);
+       PreCommitActions?.Enqueue(action);
     }
 
     /// <inheritdoc />
     public void AddPostCommit(Func<IUnitOfWork, CancellationToken, Task> action)
     {
-        PostCommitActions?.Add(action);
+        PostCommitActions?.Enqueue(action);
     }
 
     private async Task ExecutePreCommitAsync(CancellationToken ct = default)
     {
-        if (!_precommitActions.IsValueCreated)
+        if (!_postCommitActions.IsValueCreated)
         {
             return;
         }
-
-        foreach (var action in PreCommitActions)
+        var queue = _postCommitActions.Value;
+        while (queue.TryDequeue(out var action))
         {
             await action(this, ct);
         }
@@ -127,17 +128,19 @@ where TDbContext : DbContext
 
     private async Task ExecutePostCommitAsync(CancellationToken ct = default)
     {
-        if (!_postcommitActions.IsValueCreated)
+        if (!_postCommitActions.IsValueCreated)
         {
-            foreach (var action in PostCommitActions)
-            {
-                await action(this, ct);
-            }
+          return;
+        }
+        var queue = _postCommitActions.Value;
+        while (queue.TryDequeue(out var action ))
+        {
+            await action(this, ct);
         }
     }
 
-    private List<Func<IUnitOfWork, CancellationToken, Task>>? PreCommitActions => _precommitActions?.Value;
-    private List<Func<IUnitOfWork, CancellationToken, Task>>? PostCommitActions => _postcommitActions?.Value;
+    private ConcurrentQueue<Func<IUnitOfWork, CancellationToken, Task>>? PreCommitActions => _preCommitActions?.Value;
+    private ConcurrentQueue<Func<IUnitOfWork, CancellationToken, Task>>? PostCommitActions => _postCommitActions?.Value;
     
     private async Task DisposeTransactionAsync()
     {

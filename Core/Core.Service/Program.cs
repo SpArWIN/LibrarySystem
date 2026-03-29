@@ -2,9 +2,11 @@ using System.Reflection;
 using Common.Contracts.Settings;
 using Common.Db.Extensions;
 using Common.Http.Extensions;
+using Common.Messaging.Nats.Extensions;
 using Common.Http.Middleware;
 using Common.Logging.Extensions;
 using Common.Policies.Di;
+using Core.Application.Caching;
 using Core.Application.Extensions;
 using Core.Infrastructure;
 using Core.Infrastructure.Context;
@@ -30,11 +32,14 @@ services.AddCommonDb<LibraryDbContext>([typeof(BookRepository).Assembly]);
 services.AddUnitOfWorkFactories();
 services.AddTentantConfiguration(configuration);
 services.AddTenantProvisioningServices(configuration);
+services.AddNats(configuration);
+services.AddCoreNatsConsumers(configuration);
 services.AddApplicationServices(configuration);
 services.AddJwtAuthentication(configuration);
 services.AddPermissionPolicies();
-services.AddHttpContextAccessor();
-services.AddSwaggerWithXml(Assembly.GetExecutingAssembly(), typeof(JwtOptions).Assembly);
+services.AddHttpAccessor();
+services.AddSwaggerWithXml(Assembly.GetExecutingAssembly(), 
+    typeof(JwtOptions).Assembly, typeof(PreloadedImageCacheEntry).Assembly);
 services.AddPoliciesService();
 services.AddDefaultPolicies();
 

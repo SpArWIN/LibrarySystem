@@ -1,4 +1,4 @@
-﻿using Common.Messaging.Nats.Contracts.Based;
+using Common.Messaging.Nats.Contracts.Based;
 using Common.Messaging.Nats.Messages;
 using Common.Messaging.Nats.Settings;
 using NATS.Client.JetStream.Models;
@@ -14,6 +14,11 @@ public interface INatsClient : IAsyncDisposable
     /// Статус подключения.
     /// </summary>
     bool IsConnected { get; }
+
+    /// <summary>
+    /// Идентификатор клиента NATS (<c>NatsOpts.Name</c>): из настроек подключения или сгенерированный при старте.
+    /// </summary>
+    string ClientId { get; }
     
     /// <summary>
     /// Устанавливает подключение к NATS серверу.

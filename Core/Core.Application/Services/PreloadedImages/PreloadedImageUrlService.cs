@@ -1,0 +1,23 @@
+using Common.Cached.Service;
+using Core.Application.Caching;
+
+namespace Core.Application.Services.PreloadedImages;
+
+/// <inheritdoc />
+public sealed class PreloadedImageUrlService : IPreloadedImageUrlService
+{
+    private readonly ICacheService _cache;
+
+    public PreloadedImageUrlService(ICacheService cache)
+    {
+        _cache = cache;
+    }
+
+    /// <inheritdoc />
+    public async Task<PreloadedImageCacheEntry?> GetAsync(string bucket, string objectKey, CancellationToken ct = default)
+    {
+        var cacheKey = PreloadedImageCacheKeys.For(bucket, objectKey);
+        return await _cache.GetAsync<string, PreloadedImageCacheEntry?>(cacheKey, ct);
+    }
+}
+

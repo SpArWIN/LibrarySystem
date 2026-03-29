@@ -9,7 +9,7 @@ using Serilog;
 
 namespace Common.Messaging.Nats.Serialize;
 
-public sealed class NatsSerialize<T> : INatsSerialize<T>
+public sealed class NatsSerialize<T> :  INatsSerializer<T>
 where T : ILibraryMessage
 {
     private static readonly ILogger Logger = Log.ForContext<NatsSerialize<T>>();
@@ -66,5 +66,25 @@ where T : ILibraryMessage
         {
             Logger.Fatal(ex, "Failed to deserialize  message");
         }
+    }
+
+    public T? Deserialize(in ReadOnlySequence<byte> buffer)
+    {
+        if (buffer.IsEmpty)
+        {
+            return default;
+        }
+
+        if (buffer.IsSingleSegment)
+        {
+            return JsonSerializer.Deserialize<T>(buffer.FirstSpan, _options);
+        }
+
+        return JsonSerializer.Deserialize<T>(buffer.ToArray(), _options);
+    }
+
+    public INatsSerializer<T> CombineWith(INatsSerializer<T> next)
+    {
+        throw new NotImplementedException();
     }
 }

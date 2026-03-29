@@ -1,4 +1,4 @@
-﻿using Common.Messaging.Nats.Contracts.Based;
+using Common.Messaging.Nats.Contracts.Based;
 using ProtoBuf;
 
 namespace Common.Messaging.Nats.Contracts.Files;
@@ -7,7 +7,7 @@ namespace Common.Messaging.Nats.Contracts.Files;
 /// Событие: в бакет загружено предопределённое (preload) изображение
 /// </summary>
 [ProtoContract]
-public sealed class PreloadedImageAdded : ILibraryMessage
+public sealed class PreloadedImageAdded : LibraryMessageBase
 {
     /// <summary>
     /// Имя бакета.

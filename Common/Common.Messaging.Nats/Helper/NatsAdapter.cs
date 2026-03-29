@@ -1,5 +1,6 @@
 ﻿using Common.Extensions;
 using Common.Messaging.Nats.Settings;
+using Common.Messaging.Nats.SubscribeMode;
 using Common.Policies.Pollicies.Nats;
 using NATS.Client.JetStream.Models;
 
@@ -27,6 +28,11 @@ public class NatsAdapter
         if (options.DeliverGroup.IsNotNullOrEmpty())
         {
             config.DeliverGroup = options.DeliverGroup;
+        }
+
+        if (options.Mode == NatsJsSubscribeMode.Push)
+        {
+            config.DeliverSubject = options.DeliverGroup ?? $"inbox.{Guid.NewGuid()}";
         }
         
         config.ReplayPolicy = options.ReplyPolicy switch

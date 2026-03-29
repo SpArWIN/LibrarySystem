@@ -58,5 +58,5 @@ public sealed class User
     /// <summary>
     /// Роли пользователя.
     /// </summary>
-    public List<UserRole> UserRoles { get; } = [];
+    public List<UserRole> UserRoles { get; init; } = [];
 }

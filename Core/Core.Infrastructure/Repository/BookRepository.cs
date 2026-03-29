@@ -5,6 +5,7 @@ using Core.Domain.Models.Inventory;
 using Core.Domain.Models.Pagination;
 using Core.Domain.Repository;
 using Core.Infrastructure.Context;
+using Core.Infrastructure.Extensions.Books;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Infrastructure.Repository;
@@ -156,6 +157,7 @@ public sealed class BookRepository : IBookRepository
        }
        await _context.Books
            .AddRangeAsync(bookList, cancellationToken);
+     await CreateBookCopiesAsync(bookList, cancellationToken);
        return bookList.Select(x => x.Id).ToList();
     }
 
@@ -175,5 +177,31 @@ public sealed class BookRepository : IBookRepository
     public async Task RemoveBooksIdsAsync(IEnumerable<Guid> bookIds, CancellationToken cancellationToken = default)
     {
         await DeleteBooks(bookIds, cancellationToken);
+    }
+
+    private async Task CreateBookCopiesAsync(IEnumerable<Book> books, CancellationToken cancellationToken = default)
+    {
+        var allBooksCopies = new List<BookCopy>();
+        foreach (var book in books)
+        {
+            for (var i = 0; i < book.TotalCopies; i++)
+            {
+                var bookCopy = new BookCopy()
+                {
+                    Id = Guid.NewGuid(),
+                    BookId = book.Id,
+                    BookStatus = BookStatus.Available,
+                    BookKey = await book.GenerateBookKeyAsync(_context, allBooksCopies),
+                    Book = book
+                };
+                allBooksCopies.Add(bookCopy);
+            }
+        }
+
+        if (allBooksCopies.Any())
+        {
+            await _context.BookCopies.AddRangeAsync(allBooksCopies, cancellationToken);
+        }
+        
     }
 }

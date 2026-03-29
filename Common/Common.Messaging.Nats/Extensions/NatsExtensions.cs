@@ -1,5 +1,7 @@
-﻿using Common.Contracts.Constaints.Sections;
+using Common.Contracts.Constaints.Sections;
 using Common.Messaging.Nats.Clients;
+using Common.Messaging.Nats.Factories.Consumer;
+using Common.Messaging.Nats.Factories.Producer;
 using Common.Messaging.Nats.Serialize;
 using Common.Messaging.Nats.Settings;
 using Microsoft.Extensions.Configuration;
@@ -37,12 +39,14 @@ public static class NatsExtensions
             sp.GetRequiredService<IOptions<NatsJetStreamOptions>>().Value);
         
         services.AddSingleton<INatsClient, NatsClient>();
+        services.AddSingleton<INatsProducerFactory, NatsProducerFactory>();
+        services.AddSingleton<INatsConsumerFactory, NatsConsumerFactory>();
         return services;
     }
 
     private static IServiceCollection AddNatsSerializer(this IServiceCollection services)
     {
-       services.AddSingleton(typeof(INatsSerialize<>), typeof(NatsSerialize<>));
+       services.AddSingleton(typeof(INatsSerializer<>), typeof(NatsSerialize<>));
        services.AddSingleton(typeof(INatsDeserialize<>), typeof(NatsDeserialize<>));
        return services;
     }

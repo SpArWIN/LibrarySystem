@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+using Common.Messaging.Nats.Contracts.Files;
+using ProtoBuf;
 
 namespace Common.Messaging.Nats.Contracts.Based;
 
@@ -6,4 +7,5 @@ namespace Common.Messaging.Nats.Contracts.Based;
 /// Базовое сообщение публикаций.
 /// </summary>
 [ProtoContract]
+[ProtoInclude(100, typeof(PreloadedImageAdded))]
 public abstract class LibraryMessageBase : ILibraryMessage;

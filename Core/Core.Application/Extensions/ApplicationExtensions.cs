@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Common.Contracts.Constaints.Sections;
 using Common.Contracts.Settings;
 using Common.Db.Factory;
@@ -7,6 +7,7 @@ using Core.Application.Builder;
 using Core.Application.Services.AuthorizeService;
 using Core.Application.Services.Hash;
 using Core.Application.Services.JWt;
+using Core.Application.Services.PreloadedImages;
 using Core.Application.Services.Mappings;
 using Core.Infrastructure;
 using Core.Infrastructure.Context;
@@ -37,6 +38,7 @@ public static class ApplicationExtensions
         services.AddScoped<IPermissionMapper, PermissionMapper>();
         services.AddScoped<IClaimBuilder, ClaimBuilder>();
         services.AddScoped<IAuthorizeService, AuthorizeService>();
+        services.AddScoped<IPreloadedImageUrlService, PreloadedImageUrlService>();
         
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IJwtTokenService, JwtTokenService>();

@@ -1,6 +1,7 @@
 ﻿using Common.Contracts.Database;
 using Common.Contracts.Settings;
 using Common.Db.Abstractions;
+using Common.Extensions;
 using Core.Domain.Models.Instanse;
 using Core.Infrastructure.Extensions.UnitOfWorks;
 using Microsoft.Extensions.Options;
@@ -26,7 +27,7 @@ public sealed class LibraryProvisioningService(
         ArgumentNullException.ThrowIfNull(centralUow);
         ArgumentNullException.ThrowIfNull(request);
 
-        if (string.IsNullOrEmpty(request.Name))
+        if (request.Name.IsNullOrEmpty())
         {
             throw new InvalidOperationException("Library name is empty.");
         }

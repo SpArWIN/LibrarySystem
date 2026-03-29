@@ -1,4 +1,4 @@
-﻿using Common.Cached.Service;
+using Common.Cached.Service;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Common.Cached.Extensions;
@@ -15,6 +15,7 @@ public static class CacheExtensions
     /// <returns>.</returns>
     public static IServiceCollection AddCacheServices(this IServiceCollection services)
     {
+        services.AddDistributedMemoryCache();
         services.AddSingleton<ICacheService, CacheService>();
         return services;
     }

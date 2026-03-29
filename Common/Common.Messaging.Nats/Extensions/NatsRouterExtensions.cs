@@ -1,6 +1,7 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using System.Reflection;
 using Common.Messaging.Nats.Contracts.Based;
+using Common.Messaging.Nats.Handlers;
 using Common.Messaging.Nats.Processors;
 using Common.Messaging.Nats.Router;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,71 @@ public static class NatsRouterExtensions
             RegisterProcessorType(services, router, processor);
         }
         return services;
+    }
+
+    /// <summary>
+    /// Регистрирует все реализации <see cref="INatsMessageHandler{TMessage}"/> из указанных сборок.
+    /// </summary>
+    /// <param name="services"><see cref="IServiceCollection"/>.</param>
+    /// <param name="assemblies">Сборки для сканирования.</param>
+    public static IServiceCollection AddNatsMessageHandlers(
+        this IServiceCollection services,
+        params Assembly[] assemblies)
+    {
+        var handlerTypes = FindHandlerTypes(assemblies);
+        foreach (var handlerType in handlerTypes)
+        {
+            RegisterHandlerType(services, handlerType);
+        }
+
+        return services;
+    }
+
+    private static IEnumerable<Type> FindHandlerTypes(IEnumerable<Assembly> assemblies)
+    {
+        foreach (var assembly in assemblies)
+        {
+            foreach (var type in assembly.GetTypes())
+            {
+                if (IsConcreteHandler(type))
+                {
+                    yield return type;
+                }
+            }
+        }
+    }
+
+    private static void RegisterHandlerType(IServiceCollection services, Type handlerType)
+    {
+        var handlerInterfaces = handlerType.GetInterfaces().Where(IsHandlerInterface);
+        foreach (var handlerInterface in handlerInterfaces)
+        {
+            var messageType = handlerInterface.GetGenericArguments()[0];
+            ValidateHandlerMessageType(messageType, handlerType);
+            services.AddScoped(handlerInterface, handlerType);
+        }
+    }
+
+    private static void ValidateHandlerMessageType(Type messageType, Type handlerType)
+    {
+        if (!typeof(LibraryMessageBase).IsAssignableFrom(messageType))
+        {
+            throw new InvalidOperationException(
+                $"Тип сообщения '{messageType.Name}' в обработчике '{handlerType.Name}' " +
+                $"должен наследовать {nameof(LibraryMessageBase)}.");
+        }
+    }
+
+    private static bool IsConcreteHandler(Type type)
+    {
+        return type is { IsAbstract: false, IsInterface: false }
+               && type.GetInterfaces().Any(IsHandlerInterface);
+    }
+
+    private static bool IsHandlerInterface(Type @interface)
+    {
+        return @interface.IsGenericType
+               && @interface.GetGenericTypeDefinition() == typeof(INatsMessageHandler<>);
     }
 
     private static IEnumerable<Type> FindProcessorsType(IEnumerable<Assembly> assemblies)

@@ -5,5 +5,5 @@ public interface ICorrelationContextAccessor
     /// <summary>
     /// Текущий контекст запроса.
     /// </summary>
-    public ICorrelationContext CorrelationContext { get; set; }
+    public ICorrelationContext? CorrelationContext { get; set; }
 }

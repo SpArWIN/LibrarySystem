@@ -31,5 +31,13 @@ public interface IAuthorizationRepository
     /// <param name="ct"><see cref="CancellationToken"/>.</param>
     /// <returns></returns>
     Task<RefreshSession?> FindRefreshSessionByHashAsync(string tokenHash, CancellationToken ct = default);
+    
+    /// <summary>
+    /// Добавить связи с ролями пользователя.
+    /// </summary>
+    /// <param name="userRoles"><see cref="UserRole"/>.</param>
+    /// <param name="ct"><see cref="CancellationToken"/>.</param>
+    /// <returns>.</returns>
+    Task AddUserRolesAsync(IEnumerable<UserRole> userRoles, CancellationToken ct = default);
   
 }

@@ -1,4 +1,5 @@
-﻿using Common.Contracts.Permission;
+﻿using Permissionses = Common.Contracts.Permission.Permissions;
+using Common.Extensions;
 using Core.Domain.Enum.Roles;
 
 namespace Core.Application.Services.Mappings;
@@ -14,11 +15,14 @@ public sealed class PermissionMapper : IPermissionMapper
             return [];
         }
         var scopes = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var role in roles)
+        
+        roles.ForEach(role =>
         {
-            foreach (var scope in GetScopes(role))
+            GetScopes(role).ForEach(scope =>
+            {
                 scopes.Add(scope);
-        }
+            });
+        });
         
         return scopes.ToArray();
     }
@@ -28,20 +32,21 @@ public sealed class PermissionMapper : IPermissionMapper
         {
             Roles.Reader =>
             [
-                Permissions.GetBook
+                Permissionses.GetBook
             ],
             Roles.Librarian =>
             [
-                Permissions.GetBook,
-                Permissions.IssueBook,
-                Permissions.ViewDb
+                Permissionses.GetBook,
+                Permissionses.IssueBook,
+                Permissionses.ViewDb
             ],
             Roles.Administrator =>
             [
-                Permissions.GetBook,
-                Permissions.IssueBook,
-                Permissions.ViewDb,
-                Permissions.CreateDb
+                Permissionses.GetBook,
+                Permissionses.IssueBook,
+                Permissionses.ViewDb,
+                Permissionses.CreateDb,
+                Permissionses.RegisterUser 
             ],
             _ => []
         };

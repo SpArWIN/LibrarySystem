@@ -1,15 +1,25 @@
-﻿using System.Text;
+using System.Reflection;
+using System.Security.Claims;
+using System.Text;
 using Common.Contracts.Constaints.Sections;
 using Common.Contracts.Settings;
 using Common.Db.Factory;
+using Common.Extensions;
 using Common.Http;
+using Common.Http.Context;
+using Common.Validation.Api.CustomException;
+using Common.Validation.Api.Errors;
+using Common.Validation.Extensions;
+using Core.Application.Auth.Extensions;
 using Core.Application.Builder;
 using Core.Application.Services.AuthorizeService;
 using Core.Application.Services.Hash;
 using Core.Application.Services.JWt;
 using Core.Application.Services.Mappings;
+using Core.Application.Services.Permissions;
 using Core.Infrastructure;
 using Core.Infrastructure.Context;
+using Core.Infrastructure.Extensions.CacheExtensions;
 using Core.Infrastructure.Extensions.Context;
 using Core.Infrastructure.Factory;
 using Core.Infrastructure.Tentant;
@@ -35,12 +45,17 @@ public static class ApplicationExtensions
     {
         
         services.AddScoped<IPermissionMapper, PermissionMapper>();
+        services.AddScoped<IPermissionEvaluator, PermissionEvaluator>();
         services.AddScoped<IClaimBuilder, ClaimBuilder>();
         services.AddScoped<IAuthorizeService, AuthorizeService>();
         
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
+        services.AddUserPresenceCaching(configuration);
         services.AddContextConfiguration(configuration);
+        services.AddErrorHandling(Assembly.GetExecutingAssembly());
+        services.AddAuthMediatR();
+        services.AddValidationService([Assembly.GetExecutingAssembly()]);
         return services;
     }
 
@@ -66,24 +81,31 @@ public static class ApplicationExtensions
     public static IServiceCollection AddTentantConfiguration(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<TenantDatabaseOptions>(configuration.GetSection(Section.TenantDatabase));
+        services.ConfigureAndAdd<TenantDatabaseOptions>(configuration.GetSection(Section.TenantDatabase));
         services.AddScoped<ICentralLibraryRegistry, CentralLibraryRegistry>();
         return services;
     }
 
+    /// <summary>
+    /// Добавление конфигурации аутентификации.
+    /// </summary>
+    /// <param name="services"><see cref="IServiceCollection"/>.</param>
+    /// <param name="configuration"><see cref="IConfiguration"/>.</param>
+    /// <returns></returns>
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services,
         IConfiguration configuration)
     {
         
         var cfg = BuildPrefixedConfiguration(configuration);
-        services.Configure<RefreshTokenOptions>(cfg.GetSection(Section.RefreshToken));
-        services.Configure<JwtOptions>(cfg.GetSection(Section.Jwt));
+        services.ConfigureAndAdd<RefreshTokenOptions>(cfg.GetSection(Section.RefreshToken));
+        services.ConfigureAndAdd<JwtOptions>(cfg.GetSection(Section.Jwt));
         var jwt = BindJwtOptions(configuration);
-
-        if (string.IsNullOrWhiteSpace(jwt.SigningKey) || jwt.SigningKey.Length < 32)
-            throw new ApplicationException("Jwt:SigningKey is missing or too short (min 32 chars).");
         
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -96,6 +118,27 @@ public static class ApplicationExtensions
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
                     ClockSkew = TimeSpan.FromSeconds(30),
+                    NameClaimType = ClaimTypes.Name,
+                    RoleClaimType = ClaimTypes.Role,
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Token.IsNullOrEmpty() && ActorContext.Token.IsNotNullOrEmpty())
+                        {
+                            context.Token = ActorContext.Token;
+                        }
+
+                        return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        context.HandleResponse();
+                        throw LibraryException.Create(ApiErrors.Auth.Unauthorized);
+                    },
+                    OnForbidden = _ => throw LibraryException.Create(ApiErrors.Auth.Forbidden),
                 };
             });
         
@@ -113,15 +156,7 @@ public static class ApplicationExtensions
         var cfg = BuildPrefixedConfiguration(configuration);
 
         var jwt = cfg.GetSection(Section.Jwt).Get<JwtOptions>();
-        if (jwt is null
-            || string.IsNullOrWhiteSpace(jwt.Issuer)
-            || string.IsNullOrWhiteSpace(jwt.Audience)
-            || string.IsNullOrWhiteSpace(jwt.SigningKey)
-            || jwt.SigningKey.Length < 32
-            || jwt.AccessTokenLifetimeMinutes <= 0)
-            throw new ApplicationException("Jwt options are missing or invalid.");
-
         return jwt;
     }
-        
+    
 }

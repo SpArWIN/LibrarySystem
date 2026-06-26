@@ -26,7 +26,16 @@ public sealed class AuthorizationRepository(CentralDbContext context) : IAuthori
     /// <inheritdoc />
     public async Task<RefreshSession?> FindRefreshSessionByHashAsync(string tokenHash, CancellationToken ct = default)
     =>  await context.RefreshSessions.FirstOrDefaultAsync(x=> x.TokenHash == tokenHash,ct);
-    
+
+    /// <inheritdoc />
+    public async Task AddUserRolesAsync(IEnumerable<UserRole> userRoles, CancellationToken ct = default)
+    {
+        var roleList = userRoles as UserRole[] ?? userRoles.ToArray();
+        if (!roleList.Any()) return;
+        
+        await context.UserRoles.AddRangeAsync(roleList, ct);
+    }
+
 
     /*
     /// <inheritdoc />

@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Common.Contracts.Constaints.Sections;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -30,13 +29,14 @@ public static class SwaggerServiceExtensions
             });
             c.IncludeXmlFromAssemblies(assemblies);
 
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
+                Description = "JWT: вставьте только access token (префикс Bearer добавится автоматически).",
                 Name = "Authorization",
-                Type = SecuritySchemeType.ApiKey,
-                BearerFormat = Section.Jwt,
                 In = ParameterLocation.Header,
-                Description = "JWT Authorization header using the Bearer scheme."
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
             });
             c.AddSecurityRequirement(new OpenApiSecurityRequirement()
             {

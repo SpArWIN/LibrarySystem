@@ -24,4 +24,9 @@ public static class Permissions
     /// Получить книгу.
     /// </summary>
     public const string GetBook = "get_book";
+    
+    /// <summary>
+    /// Право на регистрацию пользователя. (Доступно администратору)
+    /// </summary>
+    public const string RegisterUser = "register_user";
 }

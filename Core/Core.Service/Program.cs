@@ -5,6 +5,8 @@ using Common.Http.Extensions;
 using Common.Http.Middleware;
 using Common.Logging.Extensions;
 using Common.Policies.Di;
+using Common.Validation.Api.ErrorHandle;
+using Common.Validation.Extensions;
 using Core.Application.Extensions;
 using Core.Infrastructure;
 using Core.Infrastructure.Context;
@@ -37,22 +39,24 @@ services.AddHttpContextAccessor();
 services.AddSwaggerWithXml(Assembly.GetExecutingAssembly(), typeof(JwtOptions).Assembly);
 services.AddPoliciesService();
 services.AddDefaultPolicies();
+services.AddHttpAccessor();
 
 var app = builder.Build();
 
-
+app.UseMiddleware<ErrorHandlingMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerWithUi();
 }
 
-app.UseRouting();
-app.UseAuthentication();
-app.UseMiddleware<CorrelationIdMiddleware>();
-app.UseMiddleware<TenantResolutionMiddleware>();
-app.UseAuthorization();
-
-app.UseHttpsRedirection();
+app
+    .UseHttpsRedirection()
+    .UseRouting()
+    .UseActorContext()
+    .UseAuthentication()
+    .UseMiddleware<CorrelationIdMiddleware>()
+    .UseMiddleware<TenantResolutionMiddleware>()
+    .UseAuthorization();
 app.MapControllers();
 
 await app.RunAsync();

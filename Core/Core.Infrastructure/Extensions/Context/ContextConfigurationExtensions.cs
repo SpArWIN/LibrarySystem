@@ -1,6 +1,7 @@
 ﻿using Common.Contracts.Constaints.Sections;
 using Common.Contracts.Settings;
 using Common.Db.Factory;
+using Common.Extensions;
 using Core.Infrastructure.Context;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,7 @@ public static class ContextConfigurationExtensions
     public static IServiceCollection AddContextConfiguration(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<LibraryDbContextFactoryOptions>(configuration.GetSection(Section.LibraryDbContextFactory));
+        services.ConfigureAndAdd<LibraryDbContextFactoryOptions>(configuration.GetSection(Section.LibraryDbContextFactory));
         services.AddSingleton<IAppDbContextFactory<LibraryDbContext>, LibraryDbContextFactory>();
         return services;
     }

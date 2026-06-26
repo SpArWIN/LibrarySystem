@@ -1,4 +1,4 @@
-﻿namespace Common.Contracts.Constaints.Sections;
+namespace Common.Contracts.Constaints.Sections;
 
 /// <summary>
 /// Константы секций.
@@ -44,6 +44,11 @@ public static class Section
     /// Секция JetStream
     /// </summary>
     public const string JetStream = nameof(JetStream);
+
+    /// <summary>
+    /// Кеш публичных URL предзагруженных изображений (Core).
+    /// </summary>
+    public const string PreloadedImageCache = nameof(PreloadedImageCache);
     
     /// <summary>
     /// Секция для настроек логгов.

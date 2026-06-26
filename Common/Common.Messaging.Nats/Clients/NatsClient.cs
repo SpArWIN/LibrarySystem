@@ -1,4 +1,4 @@
-﻿using System.Reactive.Disposables;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Common.Extensions;
 using Common.Messaging.Nats.Authorize;
@@ -24,6 +24,7 @@ public sealed class NatsClient : INatsClient
     private readonly INatsJSContext _jetStreamContext;
     private readonly NatsConnection? _connection;
     private readonly NatsConnectionOptions _options;
+    private readonly string _resolvedClientId;
     private readonly NatsJetStreamOptions _jetStreamOptions;
     private readonly SemaphoreSlim _connectLock = new(1, 1);
     private readonly IServiceProvider _serviceProvider;
@@ -44,6 +45,7 @@ public sealed class NatsClient : INatsClient
         )
     {
         _options = options?.Value;
+        _resolvedClientId = _options?.ClientId ?? $"NatsClient-{Guid.NewGuid():N[..8]}";
         _connection = CreateNatsConnection();
         _dbResilience = dbResilience;
         _serviceProvider = serviceProvider;
@@ -53,7 +55,10 @@ public sealed class NatsClient : INatsClient
     }
     
     /// <inheritdoc />
-    public bool IsConnected => _connection?.ConnectionState == NatsConnectionState.Connecting;
+    public bool IsConnected => _connection?.ConnectionState == NatsConnectionState.Open;
+
+    /// <inheritdoc />
+    public string ClientId => _resolvedClientId;
 
     /// <inheritdoc />
     public async Task ConnectAsync(CancellationToken cancellationToken = default)
@@ -189,7 +194,7 @@ public sealed class NatsClient : INatsClient
                 var consumerOptions = new NatsJSConsumeOpts()
                 {
                     MaxMsgs = 100,
-                    IdleHeartbeat = TimeSpan.FromSeconds(30)
+                  //  IdleHeartbeat = TimeSpan.FromSeconds(30)
                 };
 
                 await foreach (var message in consumer.ConsumeAsync(
@@ -209,7 +214,7 @@ public sealed class NatsClient : INatsClient
                             Body = message.Data,
                             Subject = message.Subject,
                             Reply = message.ReplyTo,
-                            ClientId = _options.ClientId,
+                            ClientId = _resolvedClientId,
                         };
                         observer.OnNext(natsMessage);
                         await message.AckAsync(cancellationToken: token);
@@ -259,7 +264,7 @@ public sealed class NatsClient : INatsClient
                         Body = message.Data!,
                         Subject = message.Subject,
                         Reply = message.ReplyTo,
-                        ClientId = _options.ClientId
+                        ClientId = _resolvedClientId
                     };
                     observer.OnNext(natsMessage);
                 }
@@ -381,11 +386,7 @@ public sealed class NatsClient : INatsClient
         var config = consumerConfig ?? CreateConsumerConfig(durableName, filterSubject);
         try
         {
-            await _jetStreamContext.DeleteConsumerAsync(
-                streamName,
-                durableName,
-                cancellationToken);
-
+            
             var existingConsumer = await _jetStreamContext.GetConsumerAsync(
                 streamName,
                 durableName,
@@ -403,6 +404,10 @@ public sealed class NatsClient : INatsClient
             {
                 return existingConsumer;
             }
+            await _jetStreamContext.DeleteConsumerAsync(
+                streamName,
+                durableName,
+                cancellationToken);
             
             return await _jetStreamContext.CreateOrUpdateConsumerAsync(
                 streamName,
@@ -427,6 +432,14 @@ public sealed class NatsClient : INatsClient
         return new[] { subjectPattern };
     }
     
+    //TODO Потом задать политику через 
+    /// <summary>
+    /// Преобразовать в консьюмерский конфиг.
+    /// </summary>
+    /// <param name="durableName"></param>
+    /// <param name="filterSubject"></param>
+    /// Потом переделать на другие параметры, <see cref="NatsJsSubOptions"/>
+    /// <returns></returns>
     private ConsumerConfig CreateConsumerConfig(string durableName, string filterSubject)
     {
         return new ConsumerConfig
@@ -434,8 +447,8 @@ public sealed class NatsClient : INatsClient
             Name = durableName,
             DurableName = durableName,
             FilterSubject = filterSubject,
-            DeliverSubject = GetDeliverSubject(durableName),
-            DeliverGroup = $"{durableName}_group",
+           // DeliverSubject = GetDeliverSubject(durableName),
+           // DeliverGroup = $"{durableName}_group",
 
             DeliverPolicy = ConsumerConfigDeliverPolicy.New,
             ReplayPolicy = ConsumerConfigReplayPolicy.Instant,
@@ -446,11 +459,11 @@ public sealed class NatsClient : INatsClient
             MaxAckPending = 1000,
             
             MaxDeliver = 5,
-            RateLimitBps = 100,
-            SampleFreq = "100%",
+          //  RateLimitBps = 100,
+        //    SampleFreq = "100%",
             
-            FlowControl = false,
-            IdleHeartbeat = TimeSpan.FromSeconds(30),
+          //  FlowControl = false,
+          //  IdleHeartbeat = TimeSpan.FromSeconds(15),
             
             HeadersOnly = false,
             
@@ -460,7 +473,7 @@ public sealed class NatsClient : INatsClient
     
     private static string GetDeliverSubject(string durableName)
     {
-        return $"deliver.to.{durableName}";
+        return $"INBOX.to.{durableName}";
     }
 
     private static NatsJSPubOpts CreateNatsJetStreamOptions(NatsJsPubOptions? options)
@@ -493,7 +506,7 @@ public sealed class NatsClient : INatsClient
         var opts = NatsOpts.Default with
         {
             Url = _options.Broker,
-            Name = _options.ClientId ?? $"NatsClient-{Guid.NewGuid():N[..8]}",
+            Name = _resolvedClientId,
             ConnectTimeout = TimeSpan.FromSeconds(_options.ConnectTimeout),
             ReconnectWaitMax = TimeSpan.FromSeconds(_options.ReconnectWait),
             ReconnectWaitMin = TimeSpan.FromSeconds(_options.ReconnectWait / 2),

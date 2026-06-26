@@ -1,8 +1,8 @@
-﻿
 using Common.Messaging.Nats.Contracts.Files;
+using Common.Messaging.Nats.Factories.Producer;
+using Common.Messaging.Nats.Subjects;
 using Minio.Exceptions;
 using Serilog;
-using Storage.Application.Abstractions;
 using Storage.Application.Extensions;
 using Storage.Domain.Buckets;
 using Storage.Infrastructure.KeyFolder;
@@ -26,7 +26,7 @@ public sealed class MinioBucketService : IMinioBucketService
         MinioBuckets.MetaDataImages
     ];
 
-    private readonly INatsStorage _natsStorage;
+    private readonly INatsProducerFactory _natsProducerFactory;
     private readonly Dictionary<string, string> _bucketToFolder;
     private readonly IImageStorageService _imageStorageService;
     private readonly IBucketHelperService _bucketHelperService;
@@ -36,15 +36,15 @@ public sealed class MinioBucketService : IMinioBucketService
     /// </summary>
     /// <param name="imageStorageService"></param>
     /// <param name="bucketHelperService"><see cref="IBucketHelperService"/>.</param>
-    /// <param name="natsStorage"><see cref="INatsStorage"/>.</param>
+    /// <param name="natsProducerFactory"><see cref="INatsProducerFactory"/>.</param>
     public MinioBucketService(
         IImageStorageService imageStorageService,
         IBucketHelperService bucketHelperService, 
-        INatsStorage natsStorage)
+        INatsProducerFactory natsProducerFactory)
     {
         _imageStorageService = imageStorageService;
         _bucketHelperService = bucketHelperService;
-        _natsStorage = natsStorage;
+        _natsProducerFactory = natsProducerFactory;
         var baseDir = AppContext.BaseDirectory;
         _bucketToFolder = new Dictionary<string, string>()
         {
@@ -138,19 +138,23 @@ public sealed class MinioBucketService : IMinioBucketService
                     contentType,
                     cancellationToken
                 );
-                var messageKey = KeyGenerator.GenerateKey(bucketName, objectKey);
+             
                 var publicUrlImage =
                     await _imageStorageService.GetImageUrlAsync(bucketName, fileName, cancellationToken);
-                await _natsStorage.PublishPreloadedImageAddedAsync(new PreloadedImageAdded()
-                {
-                    Bucket         = bucketName,
-                    ObjectKey      = objectKey,
-                    PublicUrl      = publicUrlImage,
-                    ContentType    = contentType,
-                    SizeBytes      = new FileInfo(filePath).Length,
-                    SourceFileName = fileName,
-                    UploadedAtUtc  = DateTime.UtcNow
-                }, cancellationToken);
+                var producer = _natsProducerFactory.Create<PreloadedImageAdded>();
+                await producer.PublishAsync(
+                    NatsSubjects.FileMetaImagePreloadedAdded,
+                    new PreloadedImageAdded
+                    {
+                        Bucket         = bucketName,
+                        ObjectKey      = objectKey,
+                        PublicUrl      = publicUrlImage,
+                        ContentType    = contentType,
+                        SizeBytes      = new FileInfo(filePath).Length,
+                        SourceFileName = fileName,
+                        UploadedAtUtc  = DateTime.UtcNow
+                    },
+                    ct: cancellationToken);
                 
             }
             catch (IOException e)

@@ -7,11 +7,25 @@
     </PropertyGroup>
 
     <ItemGroup>
+
       <ProjectReference Include="..\Common.Contracts\Common.Contracts.csproj" />
+
+      <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="10.0.2" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+
       <ProjectReference Include="..\Common.Extensions\Common.Extensions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="BloomFilter.NetCore" Version="3.0.0" />
+      <PackageReference Include="BloomFilter.Redis.NetCore" Version="3.0.0" />
+      <PackageReference Include="StackExchange.Redis" Version="2.12.14" />
+      <ProjectReference Include="..\Common.Contracts\Common.Contracts.csproj" />
+      <ProjectReference Include="..\Common.Extensions\Common.Extensions.csproj" />
       <PackageReference Include="BloomFilter.NetCore" Version="3.0.0" />
       <PackageReference Include="BloomFilter.Redis.NetCore" Version="3.0.0" />
       <PackageReference Include="StackExchange.Redis" Version="2.12.14" />

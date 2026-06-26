@@ -1,10 +1,9 @@
-﻿using Common.Contracts.Storage.Settings;
+using Common.Contracts.Storage.Settings;
 using Common.Messaging.Nats.Extensions;
 using Common.Policies.Di;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Minio;
-using Storage.Application.Abstractions;
 using Storage.Application.Constaints.Section;
 using Storage.Application.Services;
 using Storage.Domain.Repository;
@@ -69,10 +68,9 @@ public static class ServiceExtensions
     /// <param name="serviceCollection"><see cref="ServiceCollection"/>.</param>
     /// <param name="configuration"><see cref="IConfiguration"/>.</param>
     /// <returns></returns>
-    public static IServiceCollection AddNatsStorage(this IServiceCollection serviceCollection, IConfiguration configuration)
+    private static IServiceCollection AddNatsStorage(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddNats(configuration);
-        serviceCollection.AddSingleton<INatsStorage, NatsStorage>();
         return serviceCollection;
     }
 }

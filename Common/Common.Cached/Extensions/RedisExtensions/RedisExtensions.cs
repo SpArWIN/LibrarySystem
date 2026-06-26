@@ -3,6 +3,7 @@ using BloomFilter;
 using BloomFilter.Redis;
 using Common.Cached.Configurations;
 using Common.Cached.PrefixStrategy;
+using Common.Cached.Repositoryies;
 using Common.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,6 +58,7 @@ public static class RedisExtensions
             services.AddSingleton(typeof(ICachePrefixStrategy), strategyType);
         });
         services.AddSingleton<ICachedResolver, CachedPrefixResolver>();
+        services.AddSingleton(typeof(ICachedRepository<>), typeof(CachedRepository<>));
         return services;
     }
 

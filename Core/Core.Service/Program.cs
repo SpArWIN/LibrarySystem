@@ -34,12 +34,14 @@ services.AddTentantConfiguration(configuration);
 services.AddTenantProvisioningServices(configuration);
 services.AddApplicationServices(configuration);
 services.AddJwtAuthentication(configuration);
+services.AddCoreNatsConsumers(configuration);
 services.AddPermissionPolicies();
 services.AddHttpContextAccessor();
 services.AddSwaggerWithXml(Assembly.GetExecutingAssembly(), typeof(JwtOptions).Assembly);
 services.AddPoliciesService();
 services.AddDefaultPolicies();
 services.AddHttpAccessor();
+
 
 var app = builder.Build();
 

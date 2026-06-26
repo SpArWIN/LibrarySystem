@@ -7,6 +7,7 @@ using Common.Db.Factory;
 using Common.Extensions;
 using Common.Http;
 using Common.Http.Context;
+using Common.Messaging.Nats.Extensions;
 using Common.Validation.Api.CustomException;
 using Common.Validation.Api.Errors;
 using Common.Validation.Extensions;
@@ -17,6 +18,7 @@ using Core.Application.Services.Hash;
 using Core.Application.Services.JWt;
 using Core.Application.Services.Mappings;
 using Core.Application.Services.Permissions;
+using Core.Application.Services.PreloadedImages;
 using Core.Infrastructure;
 using Core.Infrastructure.Context;
 using Core.Infrastructure.Extensions.CacheExtensions;
@@ -49,12 +51,15 @@ public static class ApplicationExtensions
         services.AddScoped<IClaimBuilder, ClaimBuilder>();
         services.AddScoped<IAuthorizeService, AuthorizeService>();
         
+        services.AddSingleton<IPreloadedImageUrlService, PreloadedImageUrlService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
+        
         services.AddUserPresenceCaching(configuration);
         services.AddContextConfiguration(configuration);
         services.AddErrorHandling(Assembly.GetExecutingAssembly());
         services.AddAuthMediatR();
+        services.AddNats(configuration);
         services.AddValidationService([Assembly.GetExecutingAssembly()]);
         return services;
     }

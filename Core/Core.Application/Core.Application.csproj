@@ -22,7 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR" Version="12.0.1" />
       <ProjectReference Include="..\..\Common\Common.Http\Common.Http.csproj" />
       <ProjectReference Include="..\..\Common\Common.Validation\Common.Validation.csproj" />
       <PackageReference Include="MediatR" Version="12.0.1" />

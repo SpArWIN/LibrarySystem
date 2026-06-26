@@ -1,5 +1,6 @@
 using Common.Cached.Extensions;
 using Common.Contracts.Constaints.Sections;
+using Common.Extensions;
 using Common.Messaging.Nats.Extensions;
 using Core.Application.Handlers.Storage;
 using Core.Application.Hosted;
@@ -19,8 +20,7 @@ public static class CoreNatsExtensions
     /// </summary>
     public static IServiceCollection AddCoreNatsConsumers(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<PreloadedImageCacheOptions>(configuration.GetSection(Section.PreloadedImageCache));
-        services.AddCacheServices();
+        services.ConfigureAndAdd<PreloadedImageCacheOptions>(configuration.GetSection(Section.PreloadedImageCache));
         services.AddNatsMessageHandlers(typeof(PreloadedImageAddedHandler).Assembly);
         services.AddHostedService<PreloadedImagedService>();
         return services;

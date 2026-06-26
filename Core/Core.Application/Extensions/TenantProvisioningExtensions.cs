@@ -1,6 +1,7 @@
 ﻿using Common.Contracts.Constaints.Sections;
 using Common.Contracts.Settings;
 using Common.Db.Abstractions;
+using Common.Extensions;
 using Core.Application.Services.Abstractions;
 using Core.Infrastructure.DbProvisioning;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +24,7 @@ public static class TenantProvisioningExtensions
         this IServiceCollection services, 
         IConfiguration configuration)
     {
-        services.Configure<TenantProvisioningOptions>(configuration.GetSection(Section.TenantProvisioning));
+        services.ConfigureAndAdd<TenantProvisioningOptions>(configuration.GetSection(Section.TenantProvisioning));
         services.AddSingleton<IDatabaseProvisioner, PostgresDatabaseProvisioner>();
         services.AddSingleton<ITenantDatabaseMigrator, TenantDatabaseMigrator>();
         services.AddScoped<ILibraryProvisioningService, LibraryProvisioningService>();

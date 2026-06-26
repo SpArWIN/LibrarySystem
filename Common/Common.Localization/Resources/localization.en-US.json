@@ -1,0 +1,47 @@
+{
+  "Api": {
+    "Auth": {
+      "Errors": {
+        "InvalidToken": "Invalid or malformed token",
+        "TokenExpired": "Token has expired",
+        "InvalidCredentials": "Invalid username or password",
+        "RefreshTokenNotFound": "Refresh token not found",
+        "UserNotFound": "User not found",
+        "Unauthorized": "Authentication required",
+        "Forbidden": "Access denied",
+        "UserErrors": {
+          "UserNameRequired": "Username is required",
+          "UsernameTooShort": "Username must be at least {MinLength} characters long",
+          "PasswordRequired": "Password is required",
+          "PasswordTooShort": "Password must be at least {MinLength} characters long",
+          "LastNameRequired": "Last name is required",
+          "FirstNameRequired": "First name is required",
+          "UserAlreadyExists": "User with this username already exists"
+        }
+      }
+      }
+    },
+    "Books": {
+      "Errors": {
+        "NotFound": "Book with id {BookId} not found",
+        "InvalidIsbn": "Invalid ISBN format",
+        "TitleRequired": "Book title is required",
+        "TitleTooLong": "Book title cannot exceed {MaxLength} characters",
+        "AlreadyExists": "Book with ISBN {Isbn} already exists"
+      }
+    },
+    "Loans": {
+      "Errors": {
+        "NotFound": "Loan with id {LoanId} not found",
+        "BookAlreadyLoaned": "Book is already loaned to another user",
+        "InvalidDates": "Return date must be after loan date",
+        "OverdueReturn": "Book return is overdue by {Days} days"
+      }
+    },
+    "Common": {
+      "Errors": {
+        "InternalServerError": "Internal server error",
+        "ValidationFailed": "Validation failed"
+      }
+    }
+  }

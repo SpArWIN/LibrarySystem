@@ -8,14 +8,23 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.Cached\Common.Cached.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Cached\Common.Cached.csproj" />
       <ProjectReference Include="..\..\Common\Common.Contracts\Common.Contracts.csproj" />
+
+      <ProjectReference Include="..\..\Common\Common.Http\Common.Http.csproj" />
+
       <ProjectReference Include="..\..\Common\Common.Messaging.Nats\Common.Messaging.Nats.csproj" />
+
       <ProjectReference Include="..\..\Common\Common.Policies\Common.Policies.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Validation\Common.Validation.csproj" />
       <ProjectReference Include="..\Core.Infrastructure\Core.Infrastructure.csproj" />
     
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Common\Common.Http\Common.Http.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Validation\Common.Validation.csproj" />
+      <PackageReference Include="MediatR" Version="12.0.1" />
       <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />

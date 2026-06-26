@@ -23,6 +23,12 @@ public sealed class RefreshSession
     /// <summary>UTC дата отзыва (если null — активен).</summary>
     public DateTimeOffset? RevokedAtUtc { get; set; }
 
+    /// <summary>Последний выданный access token (для повторного login без ротации).</summary>
+    public string? AccessToken { get; set; }
+
+    /// <summary>UTC истечения access token.</summary>
+    public DateTimeOffset? AccessExpiresAtUtc { get; set; }
+
     /// <summary>Идентификатор сессии, которая заменила эту.</summary>
     public Guid? ReplacedBySessionId { get; set; }
 

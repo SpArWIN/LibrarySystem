@@ -5,7 +5,7 @@ namespace Common.Contracts.Auth;
 /// <summary>
 /// Ответ на авторизацию.
 /// </summary>
-public sealed record AuthorizeResponse
+public record AuthorizeResponse
 {
     /// <summary>Access token (JWT).</summary>
     public required string AccessToken { get; init; }

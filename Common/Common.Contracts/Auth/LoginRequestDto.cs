@@ -11,6 +11,9 @@ public sealed record LoginRequestDto
     /// <summary>Пароль.</summary>
     public  string Password { get; init; } = null!;
 
+    /// <summary>Опционально: refresh-токен клиента для повторной выдачи той же сессии.</summary>
+    public string? RefreshToken { get; init; }
+
     /// <summary>Опционально: выбранная библиотека (tenant).</summary>
     public Guid? LibraryId { get; init; }
 }

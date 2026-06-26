@@ -34,4 +34,9 @@ public sealed record UserInfoDto
 
     /// <summary>Роли пользователя (строковые имена).</summary>
     public required IReadOnlyCollection<string> Roles { get; init; }
+
+    /// <summary>
+    /// Permissions (scopes из JWT) — для отображения возможностей на фронте после login/register.
+    /// </summary>
+    public required IReadOnlyCollection<string> Permissions { get; init; }
 }

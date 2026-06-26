@@ -38,6 +38,33 @@ public sealed class RefreshSessionRepository : IRefreshSessionRepository
     }
 
     /// <inheritdoc />
+    public async Task<RefreshSession?> FindLatestActiveByUserIdAsync(
+        Guid userId,
+        DateTimeOffset nowUtc,
+        CancellationToken ct = default) =>
+        await _context.RefreshSessions
+            .AsNoTracking()
+            .Where(x => x.UserId == userId
+                        && x.RevokedAtUtc == null
+                        && x.ExpiresAtUtc > nowUtc)
+            .OrderByDescending(x => x.CreatedAtUtc)
+            .FirstOrDefaultAsync(ct);
+
+    /// <inheritdoc />
+    public Task UpdateAccessAsync(
+        Guid sessionId,
+        string accessToken,
+        DateTimeOffset accessExpiresAtUtc,
+        CancellationToken ct = default) =>
+        _context.RefreshSessions
+            .Where(x => x.Id == sessionId)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(x => x.AccessToken, accessToken)
+                    .SetProperty(x => x.AccessExpiresAtUtc, accessExpiresAtUtc),
+                ct);
+
+    /// <inheritdoc />
     public async Task RevokeAsync(Guid sessionId, DateTimeOffset revokedAtUtc, Guid? replacedBySessionId,
         CancellationToken ct = default)
     {

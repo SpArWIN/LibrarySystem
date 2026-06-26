@@ -25,5 +25,8 @@ public class RefreshSessionConfiguration : IEntityTypeConfiguration<RefreshSessi
 
         builder.HasIndex(x => x.UserId);
         builder.HasIndex(x => x.ExpiresAtUtc);
+
+        builder.Property(x => x.AccessToken)
+            .HasColumnType("text");
     }
 }

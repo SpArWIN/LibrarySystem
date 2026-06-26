@@ -12,4 +12,9 @@ public interface ICorrelationContext
     /// Идентификатор запроса.
     /// </summary>
     public Guid CorrelationId { get; }
+    
+    /// <summary>
+    /// Данные передачи между PipeLine.
+    /// </summary>
+    IDictionary<string, object> Items { get; }
 }

@@ -13,6 +13,16 @@ public interface IRefreshSessionRepository
     /// <summary>Найти сессию по TokenHash.</summary>
     Task<RefreshSession?> FindByHashAsync(string tokenHash, CancellationToken ct = default);
 
+    /// <summary>Последняя активная сессия пользователя.</summary>
+    Task<RefreshSession?> FindLatestActiveByUserIdAsync(Guid userId, DateTimeOffset nowUtc, CancellationToken ct = default);
+
+    /// <summary>Обновить access token в существующей сессии.</summary>
+    Task UpdateAccessAsync(
+        Guid sessionId,
+        string accessToken,
+        DateTimeOffset accessExpiresAtUtc,
+        CancellationToken ct = default);
+
     /// <summary>
     /// Отозвать сессию.
     /// </summary>

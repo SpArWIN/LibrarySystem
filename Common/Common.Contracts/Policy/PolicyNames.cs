@@ -19,4 +19,9 @@ public static class PolicyNames
     /// Выдавать книгу.
     /// </summary>
     public const string IssueBook = "IssueBook";
+    
+    /// <summary>
+    /// Политика создания пользователя(доступная администратору).
+    /// </summary>
+    public const string CreateUser = "CreateUser";
 }

@@ -1,0 +1,47 @@
+{
+  "Api": {
+    "Auth": {
+      "Errors": {
+        "InvalidToken": "Токен недействителен (неверная подпись, испорчен)",
+        "TokenExpired": "Срок действия токена истек",
+        "InvalidCredentials": "Неверный логин или пароль",
+        "RefreshTokenNotFound": "Refresh токен не найден",
+        "UserNotFound": "Пользователь не найден",
+        "Unauthorized": "Требуется аутентификация",
+        "Forbidden": "Доступ запрещен",
+        "UserErrors": {
+          "UserNameRequired": "Имя пользователя обязательно для заполнения",
+          "UsernameTooShort": "Имя пользователя должно содержать не менее {MinLength} символов",
+          "PasswordRequired": "Пароль обязателен для заполнения",
+          "PasswordTooShort": "Пароль должен содержать не менее {MinLength} символов",
+          "LastNameRequired": "Фамилия обязательна для заполнения",
+          "FirstNameRequired": "Имя обязательно для заполнения",
+          "UserAlreadyExists": "Пользователь с таким именем уже существует"
+        }
+      }
+    },
+    "Books": {
+      "Errors": {
+        "NotFound": "Книга с идентификатором {BookId} не найдена",
+        "InvalidIsbn": "Неверный формат ISBN",
+        "TitleRequired": "Название книги обязательно для заполнения",
+        "TitleTooLong": "Название книги не должно превышать {MaxLength} символов",
+        "AlreadyExists": "Книга с ISBN {Isbn} уже существует"
+      }
+    },
+    "Loans": {
+      "Errors": {
+        "NotFound": "Выдача с идентификатором {LoanId} не найдена",
+        "BookAlreadyLoaned": "Книга уже выдана другому читателю",
+        "InvalidDates": "Дата возврата должна быть позже даты выдачи",
+        "OverdueReturn": "Просрочен возврат книги на {Days} дней"
+      }
+    },
+    "Common": {
+      "Errors": {
+        "InternalServerError": "Внутренняя ошибка сервера",
+        "ValidationFailed": "Ошибка валидации"
+      }
+    }
+  }
+}

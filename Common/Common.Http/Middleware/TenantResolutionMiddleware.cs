@@ -38,7 +38,7 @@ public sealed class TenantResolutionMiddleware (RequestDelegate next)
     }
     
     
-    
+    /// <inheritdoc />
     private sealed class TenantContext(Guid libraryId, DataBaseSettings dbSettings) : ITenantContext
     {
         public Guid LibraryId { get; } = libraryId;

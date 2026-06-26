@@ -12,7 +12,7 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.7" />
       <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
       <PackageReference Include="Npgsql" Version="9.0.1" />
@@ -20,11 +20,13 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Common\Common.Cached\Common.Cached.csproj" />
       <ProjectReference Include="..\..\Common\Common.Contracts\Common.Contracts.csproj" />
       <ProjectReference Include="..\..\Common\Common.Db\Common.Db.csproj" />
       <ProjectReference Include="..\..\Common\Common.Extensions\Common.Extensions.csproj" />
       <ProjectReference Include="..\..\Common\Common.Http\Common.Http.csproj" />
       <ProjectReference Include="..\..\Common\Common.Policies\Common.Policies.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Validation\Common.Validation.csproj" />
       <ProjectReference Include="..\Core.Domain\Core.Domain.csproj" />
     </ItemGroup>
 

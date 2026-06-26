@@ -12,6 +12,7 @@ public sealed class CorrelationIdMiddleware(RequestDelegate next)
         HttpContext context,
         ICorrelationContextAccessor accessor)
     {
+        
         var correlationId =
             context.Request.Headers.TryGetValue(HeaderName, out var values)
             && Guid.TryParse(values.FirstOrDefault(), out var parsed)
@@ -21,14 +22,23 @@ public sealed class CorrelationIdMiddleware(RequestDelegate next)
         accessor.CorrelationContext = new CorrelationContext(correlationId);
 
         context.Response.Headers[HeaderName] = correlationId.ToString();
-        
-        using (LogContext.PushProperty("CorrelationId", correlationId))
+        try
         {
-            await next(context);
+            using (LogContext.PushProperty("CorrelationId", correlationId))
+            {
+                await next(context);
+            }
+        }
+        finally
+        {
+            accessor.CorrelationContext = null;
         }
     }
-    
-    
 }
 
-public sealed record CorrelationContext(Guid CorrelationId) : ICorrelationContext;
+/// <inheritdoc />
+public sealed record CorrelationContext(Guid CorrelationId) : ICorrelationContext
+{
+    /// <inheritdoc />
+    public IDictionary<string, object> Items { get; } = new Dictionary<string, object>();
+}

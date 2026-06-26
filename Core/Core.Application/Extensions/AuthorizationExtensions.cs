@@ -1,6 +1,6 @@
 ﻿using Common.Contracts.Claims;
-using Common.Contracts.Permission;
 using Common.Contracts.Policy;
+using Common.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,19 +14,13 @@ public static class AuthorizationExtensions
 {
     public static IServiceCollection AddPermissionPolicies(this IServiceCollection services)
     {
-        var map = new (string Policy, string Permission)[]
-        {
-            (PolicyNames.ViewDb, Permissions.ViewDb),
-            (PolicyNames.CreateDb, Permissions.CreateDb),
-            (PolicyNames.IssueBook, Permissions.IssueBook)
-        };
-
         services.AddAuthorization(options =>
         {
-            foreach (var (policy, permission) in map)
+            PolicyPermissionRegistry.All.ForEach(pm =>
             {
-                options.AddPolicy(policy, p => p.RequireClaim(ClaimNames.Scope, permission));
-            }
+                options.AddPolicy(pm.Policy, p =>
+                    p.RequireClaim(ClaimNames.Scope, pm.Permission));
+            });
 
             options.FallbackPolicy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
